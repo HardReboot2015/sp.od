@@ -1,0 +1,27 @@
+<div class = "content_bg p-4 ml-4 ">
+    <div class="sidebar-content">
+        <form method="post" action="/login">
+            {{ login_form.hidden_tag() }}
+          <div class="form-group">
+              <label class="d-block text-center font-weight-bolder text-blue">Авторизация</label>
+
+            <input type="text" class="form-control" name="{{ login_form.username.name }}"  placeholder="Логин">
+{#            <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>#}
+          </div>
+          <div class="form-group">
+        {#    <label for="exampleInputPassword1">Password</label>#}
+            <input type="password" name="{{ login_form.password.name }}" class="form-control" placeholder="Пароль">
+          </div>
+          <div class="form-group form-check">
+            <input type="checkbox" class="form-check-input" id="RememberCheck">
+            <label class="form-check-label" name = "Remember_me" for="RememberCheck">Запомнить меня</label>
+          </div>
+            <div class="row justify-content-center">
+                <button type="submit" class="btn mb-1 btn-primary bg-blue btn-sp-primary w-75">Вход</button>
+            </div>
+            <div class="row justify-content-center ">
+                <a href="{{ url_for("register") }} " class="btn btn-light btn-sp-light w-75">Регистрация</a>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block regform %}
+    <div class="row justify-content-center">
+        <div class="registration bg-white shadow p-4 px-5 border col-lg-6 col-md-8 col-sm-12 align-self-center">
+            <form method="post" action="">
+                {{ register_form.hidden_tag() }}
+                <h2 class="d-block text-center font-weight-bolder text-blue">Регистрация</h2>
+                <div class="form-group">
+                    <label for="reg-last_name" >Фамилия</label>
+                    <input type="text" name="{{ register_form.last_name.name }}"  id="reg-last_name" class="form-control text-center"
+                           {% if register_form.last_name.data %}value="{{ register_form.last_name.data }}"{% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="reg-name">Имя</label>
+                    <input type="text" name="{{ register_form.first_name.name }}" id="reg-name" class="form-control text-center"
+                           {% if register_form.first_name.data %}value="{{ register_form.first_name.data }}"{% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">E-mail</label>
+                    <input type="email" name="{{ register_form.email.name }}"id="reg-email" class="form-control text-center"
+                           {% if register_form.email.data %}value="{{ register_form.email.data }}"{% endif %}
+                    {% if register_form.email.errors %} style = "border: 1px solid red"{% endif %}>
+                    {% for error in register_form.email.errors %}
+                    <span style = "color: red">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="form-group">
+                    <label for="reg-login">Логин</label>
+                    <input type="text" name="{{ register_form.login.name }}"  id="reg-login" class="form-control text-center"
+                    {% if register_form.login.data %}value="{{ register_form.login.data }}"{% endif %}
+                    {% if register_form.login.errors %} style = "border: 1px solid red"{% endif %}>
+                        {% for error in register_form.login.errors %}
+                        <span style = "color: red">{{ error }}</span>
+                        {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" name="{{ register_form.password.name }}"  id="reg-password" class="form-control text-center"
+                           {% if register_form.password.data %}value="{{ register_form.password.data }}"{% endif %}
+                    {% if register_form.password2.errors %} style = "border: 1px solid red"{% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="con_password">Повторите пароль</label>
+                    <input type="password" name="{{ register_form.password2.name }}" id="reg-con-password" class="form-control text-center"
+                    {% if register_form.password2.errors %} style = "border: 1px solid red"{% endif %}>
+                {% for error in register_form.password2.errors %}
+                    <span style = "color: red">{{ error }}</span>
+                    {% endfor %}
+                </div>
+                <div class="row justify-content-center">
+                    <button type="submit" name = "{{ register_form.submit.name }}" class="btn mb-1 btn-primary bg-blue btn-sp-primary w-75">ОК</button>
+                </div>
+                <div class="row justify-content-center ">
+                    <a href="{{ url_for("index") }} " class="btn btn-light btn-sp-light w-75">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

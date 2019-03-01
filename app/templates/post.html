@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="content_bg p-3 m-0 m-lg-0 mb-lg-3 mb-3">
+    <div class="post_header">
+        <h2 class="big_info-text pl-2">{{ product.name }}</h2>
+    </div>
+
+    <div class="post_images row justify-content-center p-2 ">
+        <div class="post_image-box main_image col-12 col-sm-12 col-lg-6 col-md-6">
+                <img src="{{ product.main_image }}" alt="" class = "post_image ">
+        </div>
+            <div class=" row col-12 col-sm-12 col-lg-6 col-md-6 align-self-start">
+                {% for i in range(product.second_image|length) %}
+                   <img src="{{ product.second_image[i] }}" alt="" class = "post_image secondary_image col-3 col-lg-6 col-md-6 col-sm-3 p-0 m-auto align-self-center">
+                {% endfor %}
+            </div>
+    </div>
+    <div class="post_info row m-0">
+{#        <div class="flex-grow-1">#}
+{#            <a href="" class="big_info-text">{{ product.site.manager.login }}</a>#}
+{#        </div>#}
+{#        <div>#}
+{#            <h3 class = "big_info-text m-0">#}
+{#                {{ product.price }} грн#}
+{#            </h3>#}
+{#        </div>#}
+        <div class="product-description col-7">
+            <span class="more-info-big-text">Описание:</span>
+            <p class = "text-justify more-info-text">{{ product.description }}</p>
+        </div>
+        <div class="more-info col-5">
+            <div class="col-12">
+                <h5 class="more-info-big-text">Тип сбора:</h5> <span class="more-info-text">{{ product.type.name }}</span>
+            </div>
+            <div class="col-12">
+                <h5 class="more-info-big-text">Организатор:</h5> <span class="more-info-text">{{ product.site.manager.login }}</span>
+            </div>
+            <div class="col-12">
+                <h5 class="more-info-big-text">Цена:</h5> <span class="more-info-text">{{ product.price }}</span>
+            </div>
+{#            {% if product.type_id != 1 %}#}
+                <div class="col-12">
+                    <h5 class="more-info-big-text">{{ product.type.name }}</h5><span class="more-info-text">: {{ product.goal }}</span>
+                </div>
+                <div class="col-12">
+                <div class="progress" style="position:relative; height: 1.4rem">
+                    <div class="progress-bar-title  d-block w-100 p-0 m-0" style="position:absolute;text-align: center; font-size: 1.1rem;">{{ product.count }} из {{ product.goal }}</div>
+                    <div class="progress-bar bg-blue" role="progressbar" style="width: {{ product.percent_items }}%; " aria-valuenow="" aria-valuemin="0" aria-valuemax="{{ product.goal }}"></div>
+                </div>
+                </div>
+{#Сделать прогрес бар#}
+{#            {% endif %}#}
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+<div class="content_bg mb-2">
+		<div class="sidebar_top p-2 m-0 row justify-content-center align-items-center" style=" background: #f9f9f9 ;border-bottom: 1px solid rgba(0,0,0,0.05) ">
+            <div class="col-4 user-img p-0">
+                <img src="{{ current_user.photo }}" class = "">
+            </div>
+            <div class="col-8 user-info text-left">
+					<div><a href="" class = "user-name text-dark font-weight-bold ">{{ current_user.login }}</a></div>
+					<div class="user-exit" ><a href = "{{ url_for("logout") }}" class = " text-blue">выход</a></div>
+            </div>
+        </div>
+		<div class="sidebar_menu d-flex row m-0  py-2">
+			<a href="" class="sidebar_menu-item col-12">Заказы</a>
+			<a href="" class="sidebar_menu-item col-12">Сохраненные</a>
+			<a href="" class="sidebar_menu-item col-12">Ответы</a>
+            <a href="" class="sidebar_menu-item col-12">Настройки</a>
+            {% if current_user.is_manage %}
+                <a href="" class = "sidebar_menu-item">Мои товары</a>
+            {% endif %}
+            {% if current_user.is_admin %}
+                <a href="" class="sidebar_menu-item col-12">Организаторы</a>
+            {% endif %}
+
+
+		</div>
+</div>
+{#
+Доделать сайдбар юзера,
+сделать посты
+#}

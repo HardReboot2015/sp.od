@@ -1,0 +1,22 @@
+{% for product in products %}
+<div class="content_bg p-3 m-0 m-lg-0 mb-lg-3">
+    <div class="post_header">
+        <a href="{{ url_for('product', id = product.id) }}" class="big_info-text pl-2">{{ product.name }}</a>
+    </div>
+    <div class="post_images row justify-content-center">
+        <div class="post_image-box">
+            <img src="{{ product.main_image }}" alt="" class = "post_image">
+        </div>
+    </div>
+    <div class="post_info row m-0">
+        <div class="flex-grow-1">
+            <a href="" class="big_info-text">{{ product.site.manager.login }}</a>
+        </div>
+        <div>
+            <h3 class = "big_info-text m-0">
+                {{ product.price }} грн
+            </h3>
+        </div>
+    </div>
+</div>
+{% endfor %}
