@@ -28,3 +28,4 @@ class RegisterForm(FlaskForm):
             raise ValidationError("Такой логин уже используется")
 
 
+

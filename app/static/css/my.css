@@ -142,11 +142,28 @@ a:hover{
 .post_image-box{
     height: 65vh;
 }
-.post_image{
+.post_image {
     width: auto;
-    height:  100%;
+    height: 100%;
     background-size: cover;
 }
+@media (min-width: 1200px){
+    .post_image{
+        height: auto;
+        width: 100%;
+    }
+    .post_image-box{
+        height: auto;
+    }
+}
+@media (min-width: 1445px) {
+    .post_image {
+        width:100%;
+    }
+}
+
+
+
 
 /*product-page*/
 .main_image{
