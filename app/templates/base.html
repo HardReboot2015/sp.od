@@ -30,10 +30,11 @@
                             Категории
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item " href="#">Another action</a>
+                            <a class="dropdown-item" href="{{ url_for("categories") }}">Все</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>
+                            {% for category in categories %}
+                            <a class="dropdown-item " href="#">{{ category.name }}</a>
+                            {% endfor %}
                         </div>
                     </li>
                     <li class="nav-item">
@@ -71,7 +72,7 @@
         </div>
     {% endif %}
 </div>
-    <footer class = "footer bg-blue pt-3">
+    <footer class = "footer bg-blue pt-3 al">
         <div class="container">
             <div class="row">
                 <div class="footer-text text-white">

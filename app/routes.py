@@ -1,20 +1,26 @@
 # -*- coding: utf-8 -*-
 from app import app
 from app import db
-from app.forms import LoginForm, RegisterForm
-from app.models import User, Product
-from flask import render_template, flash, redirect, url_for
+from app.forms import LoginForm, RegisterForm, EditProfileForm
+from app.models import User, Product, Category
+from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_required, login_user, logout_user
+
+
+
+def is_auth():
+    if current_user.is_authenticated:
+        return None
+    else:
+        return LoginForm()
 
 @app.route("/")
 @app.route("/index")
 def index():
-    if current_user.is_authenticated:
-        login_form = None
-    else:
-        login_form = LoginForm()
+    login_form = is_auth()
     products = Product.query.all()
-    return render_template("index.html", login_form=login_form, products=products)
+    categories = Category.query.all()
+    return render_template("index.html", login_form=login_form, products=products, categories=categories)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -36,7 +42,9 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     register_form = RegisterForm()
+    categories = Category.query.all()
     if register_form.validate_on_submit():
+
         user = User(first_name=register_form.first_name.data, last_name=register_form.last_name.data,
                     login=register_form.login.data, email=register_form.email.data)
         user.set_password(register_form.password.data)
@@ -44,7 +52,8 @@ def register():
         db.session.commit()
         login_user(user)
         return redirect(url_for('index'))
-    return render_template("register.html", no_sidebar = True, title = "Регистрация", register_form = register_form )
+
+    return render_template("register.html", no_sidebar = True, title = "Регистрация", register_form = register_form, categories=categories )
 
 @app.route('/logout')
 @login_required
@@ -55,27 +64,63 @@ def logout():
 # @app.route("/<username>/settings", methods = ['GET', 'POST'])
 # @login_required
 
-@app.route('/test')
-def test():
-    pr = Product.query.all()
-    manager = User.query.get(1)
-    for site in manager.sites:
-        products = site.products
-        for product in products:
-            return product.name
-    for p in pr:
-        manager = p.site.manager.login
-    return str(manager)
+
+# @app.route('/test')
+# def test():
+#     pr = Product.query.all()
+#     manager = User.query.get(1)
+#     for site in manager.sites:
+#         products = site.products
+#         for product in products:
+#             return product.name
+#     for p in pr:
+#         manager = p.site.manager.login
+#     return str(manager)
+
 
 @app.route('/product/<int:id>')
 def product(id):
-    if current_user.is_authenticated:
-        login_form = None
-    else:
-        login_form = LoginForm()
+    login_form = is_auth()
 
     post_product = Product.query.get(id)
     product_items = post_product.items.all()
     post_product.get_busy_items()
     post_product.get_percent_items_goal()
-    return render_template("post.html",title = post_product.name, product_items=product_items, product=post_product, login_form=login_form)
+    categories = Category.query.all()
+
+    return render_template("post.html",title = post_product.name, product_items=product_items, product=post_product, login_form=login_form,categories=categories)
+
+@app.route('/categories')
+def categories():
+    login_form = is_auth()
+    categories = Category.query.all()
+
+    return render_template("categories.html", title = "Категории", categories = categories, login_form=login_form)
+
+@app.route('/settings/<username>', methods = ['GET', 'POST'])
+@login_required
+def settings(username):
+    if not current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = EditProfileForm(current_user.login)
+    if form.validate_on_submit():
+        current_user.login = form.login.data
+        current_user.first_name = form.first_name.data
+        current_user.last_name = form.last_name.data
+        current_user.phone = form.phone.data
+
+        current_user.password = form.password2.data
+        current_user.email = form.email.data
+
+    elif request.method == 'GET':
+        form.login.data = current_user.login
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
+        form.phone.data = current_user.phone
+        form.first_name.data = current_user.first_name
+
+        form.password2.data = current_user.password
+        form.email.data = current_user.email
+
+    return render_template("settings.html", title = "Настройки")
+

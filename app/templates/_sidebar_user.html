@@ -12,7 +12,7 @@
 			<a href="" class="sidebar_menu-item col-12">Заказы</a>
 			<a href="" class="sidebar_menu-item col-12">Сохраненные</a>
 			<a href="" class="sidebar_menu-item col-12">Ответы</a>
-            <a href="" class="sidebar_menu-item col-12">Настройки</a>
+            <a href="{{ url_for('settings', username = current_user.login ) }}" class="sidebar_menu-item col-12">Настройки</a>
             {% if current_user.is_manage %}
                 <a href="" class = "sidebar_menu-item">Мои товары</a>
             {% endif %}

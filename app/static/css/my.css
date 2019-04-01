@@ -73,6 +73,7 @@ a:hover{
     border: 1px solid #e9e9e9;
     background: white;
     box-shadow:0 .25rem 0.5rem rgba(0,0,0,.15);
+    border-radius: 0;
 }
 .user-name{
     color: #212121;
@@ -180,4 +181,30 @@ a:hover{
     display: inline-block;
     font-weight: 500;
     font-size: 1.2rem;
+}
+/*user-settings*/
+
+.settings-menu{
+    font-size: 1.5rem;
+}
+.settings-menu .settings-menu-item::before{
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+}
+.settings-menu-item::before{
+    transition: opacity 200ms ease-out;
+    content: '';
+    background-color: #0086b5;
+        opacity: 0;
+    position: absolute;
+}
+
+.settings-menu-item:hover::before{
+    opacity: 1;
+}
+
+.settings-menu-item:hover{
+     color: #0086b5;
+    text-decoration: none;
 }

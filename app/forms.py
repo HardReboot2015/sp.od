@@ -27,5 +27,31 @@ class RegisterForm(FlaskForm):
         if user is not None:
             raise ValidationError("Такой логин уже используется")
 
+class EditProfileForm(FlaskForm):
+    # Общая информация
+    login = StringField('Login', validators=[DataRequired()])
+    last_name = StringField('LastName', validators=[DataRequired()])
+    first_name = StringField('FirstName', validators=[DataRequired()])
+    phone = StringField('Phone', validators=[DataRequired()])
+    # image = StringField('Image', validators=[DataRequired()])
+    # Защита
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField('Repeat password',
+                              validators=[DataRequired(), EqualTo('password', message="Введенные пароли не совпадают")])
+    # Cмена емаила после отправления сбщ на почту
+    email = StringField('Email', validators=[DataRequired()])
+    submit = SubmitField('Edit')
+
+    def __init__(self, original_username, *args, **kwargs):
+        super(EditProfileForm, self).__init__(*args, **kwargs)
+        self.original_username = original_username
+
+    def validate_username(self, login):
+        if login.data != self.original_username:
+            user = User.query.filter_by(username=self.login.data).first()
+            if user is not None:
+                raise ValidationError('Please use a different username')
+
+
 
 
