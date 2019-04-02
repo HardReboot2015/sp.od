@@ -1,4 +1,7 @@
 /*all*/
+.main{
+    min-height: 100vh;
+}
 a:hover{
     text-decoration: none;
     color: #0086b5;
@@ -184,25 +187,33 @@ a:hover{
 }
 /*user-settings*/
 
-.settings-menu{
-    font-size: 1.5rem;
-}
-.settings-menu .settings-menu-item::before{
-    bottom: 0;
-    height: 2px;
-    width: 100%;
-}
-.settings-menu-item::before{
-    transition: opacity 200ms ease-out;
-    content: '';
-    background-color: #0086b5;
-        opacity: 0;
-    position: absolute;
+.settings-menu>a{
+    font-size: 1.3rem;
+    /*border-bottom: 1px solid #0086b5;*/
+
 }
 
-.settings-menu-item:hover::before{
-    opacity: 1;
-}
+/*.settings-menu-item{*/
+    /*position: relative;*/
+/*}*/
+
+/*.settings-menu .settings-menu-item::before{*/
+    /*position: absolute;*/
+    /*bottom: 0;*/
+    /*height: 2px;*/
+    /*width: 100%;*/
+/*}*/
+/*.settings-menu-item::before{*/
+    /*transition: opacity 200ms ease-out;*/
+    /*content: '';*/
+    /*background-color: #0086b5;*/
+    /*opacity: 0;*/
+    /*!*position: absolute;*!*/
+/*}*/
+
+/*.settings-menu-item:hover::before{*/
+    /*opacity: 1;*/
+/*}*/
 
 .settings-menu-item:hover{
      color: #0086b5;
