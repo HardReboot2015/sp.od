@@ -2,7 +2,7 @@
 from app import app
 from app import db
 from app.forms import LoginForm, RegisterForm, EditProfileForm
-from app.models import User, Product, Category
+from app.models import User, Product, Category, Type, Site
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_required, login_user, logout_user
 
@@ -124,3 +124,12 @@ def settings(username):
 
     return render_template("settings.html", title = "Настройки")
 
+@app.route('/add_product', methods=['GET', 'POST'])
+@login_required
+def add_product():
+    if not current_user.is_manage or not current_user.is_admin:
+        return redirect(url_for('index'))
+    categories = Category.query.all()
+    sites = Site.query.filter_by(manager_id=current_user.id)
+    types = Type.query.all()
+    return render_template("add_product.html", title="Добавить товар", categories=categories, types=types, sites=sites)

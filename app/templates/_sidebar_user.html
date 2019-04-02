@@ -14,16 +14,12 @@
 			<a href="" class="sidebar_menu-item col-12">Ответы</a>
             <a href="{{ url_for('settings', username = current_user.login ) }}" class="sidebar_menu-item col-12">Настройки</a>
             {% if current_user.is_manage %}
-                <a href="" class = "sidebar_menu-item">Мои товары</a>
+                <a href="" class = "sidebar_menu-item col-12">Мои товары</a>
+                <a href="{{ url_for("add_product") }}" class = "sidebar_menu-item col-12">Добавить товар</a>
             {% endif %}
             {% if current_user.is_admin %}
                 <a href="" class="sidebar_menu-item col-12">Организаторы</a>
             {% endif %}
 
-
 		</div>
 </div>
-{#
-Доделать сайдбар юзера,
-сделать посты
-#}

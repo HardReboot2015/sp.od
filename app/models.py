@@ -9,10 +9,12 @@ class Product(db.Model):
     description = db.Column(db.String(512), nullable=True, default="")
     main_image = db.Column(db.String(128), nullable=False, default="")
     second_image = db.Column(db.ARRAY(db.String), nullable=True, default=[])
+    url = db.Column(db.String(1024), nullable=False)
     goal = db.Column(db.Integer, nullable=False)
     type_id = db.Column(db.Integer, db.ForeignKey("type.id"))
     site_id = db.Column(db.Integer, db.ForeignKey("site.id"))
     category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
+
 
     items = db.relationship('Items', backref = 'product', lazy='dynamic')
 

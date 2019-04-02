@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class = "content_bg  m-0 m-lg-0 mb-lg-3 mb-3 col">
+        <div class="post_header m-2">
+            <h2 >Добавить товар</h2>
+        </div>
+       <div>
+            <form method="post" action="">
+{#                {{ register_form.hidden_tag() }}#}
+                <div class="form-group">
+                    <label for="product_name" >Наименование товара</label>
+                    <input type="text" name=""  id="product_name" class="form-control text-left">
+                </div>
+            <div class = "d-flex row">
+                <div class="form-group col-4">
+                    <label for="product_site">Сайт</label>
+                    <select name=""  id="product_site" class = "form-control ">
+                        {% for site in sites%}
+                        <option value="{{ site.id }}">{{ site.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-4">
+                    <label for="product_category">Категория</label>
+                    <select name=""  id="product_category" class = "form-control">
+                        {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-4">
+                    <label for="product_type">Тип сбора</label>
+                    <select name=""  id="product_type" class = "form-control">
+                        {% for type in types%}
+                        <option value="{{ type.id }}">{{ type.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class = "d-flex row">
+                <div class="form-group col-4">
+                    <label for="product_price">Цена</label>
+                    <input type="text" name="" id="product_price" class="form-control text-left">
+                </div>
+                <div class="form-group col-4">
+                    <label for="product_goal">Цель</label>
+                    <input type="text" id = "produt_url" class ="form-control">
+                </div>
+                </div>
+                <div class="form-group">
+                    <label for="product_description">Описание</label>
+                    <textarea name="" id="product_description" class="form-control text-left"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="product_url">Ссылка</label>
+                    <input type="text" id = "product_url" class ="form-control">
+                </div>
+
+{#                    <label for="reg-email">E-mail</label>#}
+{#                    <input type="email" name="{{ register_form.email.name }}"id="reg-email" class="form-control text-center"#}
+{#                           {% if register_form.email.data %}value="{{ register_form.email.data }}"{% endif %}#}
+{#                    {% if register_form.email.errors %} style = "border: 1px solid red"{% endif %}>#}
+{#                    {% for error in register_form.email.errors %}#}
+{#                    <span style = "color: red">{{ error }}</span>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#                <div class="form-group">#}
+{#                    <label for="reg-login">Логин</label>#}
+{#                    <input type="text" name="{{ register_form.login.name }}"  id="reg-login" class="form-control text-center"#}
+{#                    {% if register_form.login.data %}value="{{ register_form.login.data }}"{% endif %}#}
+{#                    {% if register_form.login.errors %} style = "border: 1px solid red"{% endif %}>#}
+{#                        {% for error in register_form.login.errors %}#}
+{#                        <span style = "color: red">{{ error }}</span>#}
+{#                        {% endfor %}#}
+{#                </div>#}
+{##}
+{#                <div class="form-group">#}
+{#                    <label for="password">Пароль</label>#}
+{#                    <input type="password" name="{{ register_form.password.name }}"  id="reg-password" class="form-control text-center"#}
+{#                           {% if register_form.password.data %}value="{{ register_form.password.data }}"{% endif %}#}
+{#                    {% if register_form.password2.errors %} style = "border: 1px solid red"{% endif %}>#}
+{#                </div>#}
+{#                <div class="form-group">#}
+{#                    <label for="con_password">Повторите пароль</label>#}
+{#                    <input type="password" name="{{ register_form.password2.name }}" id="reg-con-password" class="form-control text-center"#}
+{#                    {% if register_form.password2.errors %} style = "border: 1px solid red"{% endif %}>#}
+{#                {% for error in register_form.password2.errors %}#}
+{#                    <span style = "color: red">{{ error }}</span>#}
+{#                    {% endfor %}#}
+{#                </div>#}
+{#                <div class="row justify-content-center">#}
+{#                    <button type="submit" name = "{{ register_form.submit.name }}" class="btn mb-1 btn-primary bg-blue btn-sp-primary w-75">ОК</button>#}
+{#                </div>#}
+{#                <div class="row justify-content-center ">#}
+{#                    <a href="{{ url_for("index") }} " class="btn btn-light btn-sp-light w-75">Отмена</a>#}
+{#                </div>#}
+{#            </form>#}
+       </div>
+
+    </div>
+{% endblock %}
