@@ -1,5 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from flask_wtf.file import FileRequired, FileAllowed
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, FileField, MultipleFileField, \
+    SelectField
 from wtforms.validators import DataRequired, ValidationError, Email, EqualTo
 from app.models import User
 
@@ -52,6 +54,20 @@ class EditProfileForm(FlaskForm):
             if user is not None:
                 raise ValidationError('Please use a different username')
 
-
+class AddProductForm(FlaskForm):
+    name = StringField("Product_name", validators=[DataRequired()])
+    price = StringField("Price", validators=[DataRequired()])
+    description = TextAreaField("Description", validators=[DataRequired()])
+    main_img = FileField("MainImage", validators=[FileRequired()])
+    second_image_1 = FileField("SecondaryImage1", validators=[FileRequired()])
+    second_image_2 = FileField("SecondaryImage2", validators=[FileRequired()])
+    second_image_3 = FileField("SecondaryImage3", validators=[FileRequired()])
+    second_image_4 = FileField("SecondaryImage4", validators=[FileRequired()])
+    url = StringField("Url", validators=[DataRequired()])
+    goal = StringField("Goal", validators=[DataRequired()])
+    type = SelectField("Type", validators=[DataRequired()])
+    site =SelectField("Site", validators=[DataRequired()])
+    category = SelectField("Category", validators=[DataRequired()])
+    submit = SubmitField("Save")
 
 

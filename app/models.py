@@ -1,5 +1,6 @@
 from app import db, login
 from flask_login import UserMixin
+
 from werkzeug.security import check_password_hash, generate_password_hash
 
 class Product(db.Model):
@@ -11,6 +12,7 @@ class Product(db.Model):
     second_image = db.Column(db.ARRAY(db.String), nullable=True, default=[])
     url = db.Column(db.String(1024), nullable=False)
     goal = db.Column(db.Integer, nullable=False)
+    date_add = db.Column(db.Integer, nullable=False)
     type_id = db.Column(db.Integer, db.ForeignKey("type.id"))
     site_id = db.Column(db.Integer, db.ForeignKey("site.id"))
     category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
@@ -35,7 +37,7 @@ class Product(db.Model):
 
 class Items(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    size = db.Column(db.String(32), nullable=False)
+    size = db.Column(db.String(32), nullable=True)
     payed = db.Column(db.Boolean, default=False)
     id_color = db.Column(db.Integer, db.ForeignKey("color.id"))
     id_product = db.Column(db.Integer, db.ForeignKey("product.id"))
@@ -98,3 +100,4 @@ class User(UserMixin, db.Model):
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
