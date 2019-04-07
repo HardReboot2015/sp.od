@@ -16,7 +16,7 @@ class Product(db.Model):
     type_id = db.Column(db.Integer, db.ForeignKey("type.id"))
     site_id = db.Column(db.Integer, db.ForeignKey("site.id"))
     category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
-
+    sizes = db.Column(db.ARRAY(db.String), nullable=True, default=[])
 
     items = db.relationship('Items', backref = 'product', lazy='dynamic')
 
@@ -35,10 +35,33 @@ class Product(db.Model):
         self.price_sum = self.count * self.price
         self.percent_price = self.price_sum / self.goal * 100
 
+    def get_items_list(self):
+        self.items_list = []
+        items = self.items.all()
+        c_r = len(items)/self.goal
+
+        for _ in range(round(c_r)):
+            additional = []
+            product_ordered = 0
+
+            for j in range(len(items)):
+                items_ordered = 0
+                if items[len(items)-1].id_user is not None:
+                    items_ordered+=1
+                if items_ordered == self.goal:
+                    product_ordered += 1
+                additional.append(items.pop(0))
+                if j == self.goal - 1:
+                    break
+            self.items_list.append(additional)
+
+        self.items_list.append(product_ordered)
+
 class Items(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     size = db.Column(db.String(32), nullable=True)
     payed = db.Column(db.Boolean, default=False)
+    lock = db.Column(db.Boolean, default=False)
     id_color = db.Column(db.Integer, db.ForeignKey("color.id"))
     id_product = db.Column(db.Integer, db.ForeignKey("product.id"))
     id_user = db.Column(db.Integer, db.ForeignKey("user.id"))
@@ -54,7 +77,6 @@ class Color(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
-
 
     products = db.relationship('Product', backref='category', lazy='dynamic')
 
@@ -81,7 +103,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(64), nullable=False)
     login = db.Column(db.String(64), nullable=False, unique=True)
     email = db.Column(db.String(128), nullable=False, unique=True)
-    password = db.Column(db.String(128), nullable=False)
+    password = db.Column(db.String(256), nullable=False)
     photo = db.Column(db.String(128), nullable=False, default="/static/images/site/default_photo.png")
     phone = db.Column(db.String(32), nullable=True, unique=True)
     is_admin = db.Column(db.Boolean, default=False)

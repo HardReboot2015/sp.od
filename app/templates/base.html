@@ -10,6 +10,7 @@
     {% endif %}
     <link rel="stylesheet" href="/static/css/bootstrap.css">
     <link rel="stylesheet" href="/static/css/my.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 </head>
 <body style="background-color: #f4f4f4; line-height: 1.25; ">
 <header>
@@ -33,7 +34,7 @@
                             <a class="dropdown-item" href="{{ url_for("categories") }}">Все</a>
                             <div class="dropdown-divider"></div>
                             {% for category in categories %}
-                            <a class="dropdown-item " href="#">{{ category.name }}</a>
+                            <a class="dropdown-item " href="{{ url_for('category', id = category.id) }}">{{ category.name }}</a>
                             {% endfor %}
                         </div>
                     </li>
@@ -96,6 +97,7 @@
 </body>
 <script src="/static/js/jquery-3.3.1.js"></script>
 <script src="/static/js/popper.js"></script>
+<script src="/static/js/my.js"></script>
 <script src="/static/js/bootstrap.js"></script>
-{#<script src="/static/js/my.js"></script>#}
+
 </html>

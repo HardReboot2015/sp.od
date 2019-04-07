@@ -8,7 +8,7 @@
             <div class="card-body">
                 <h5 class="card-title cart-product-title">{{ category.name }}</h5>
             </div>
-       <div class="card-product-btn"><a href="" class="btn btn-primary d-block btn-sp-primary bg-blue">Подробнее</a></div>
+       <div class="card-product-btn"><a href="{{ url_for('category', id=category.id) }}" class="btn btn-primary d-block btn-sp-primary bg-blue">Подробнее</a></div>
     </div>
     </div>
 {% endfor %}

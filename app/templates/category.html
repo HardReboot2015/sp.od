@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="row col-12 p-0 m-0">
+        {% if products %}
+            {% for product in products %}
+                <div class = "col-4 px-1">
+                    <div class="card col-12 content_bg p-3 m-0 mb-lg-3">
+                        <img class="card-img-top" src="{{ product.main_image }}" alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title cart-product-title">{{ product.name }}</h5>
+                            <h5 class="card-title cart-product-title">{{ product.price }} грн</h5>
+                        </div>
+                        <div class="card-product-btn"><a href="{{ url_for('product', id = product.id) }}" class="btn btn-primary d-block btn-sp-primary bg-blue">Подробнее</a></div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class = "content_bg col-12 p-3 m-0 m-lg-0 mb-lg-3 mb-3 ">
+                <h1>Тут пока ничего нет</h1>
+                <a href="#" class="btn btn-primary d-block btn-sp-primary bg-blue">Заказать</a>
+            </div>
+
+        {% endif %}
+    </div>
+{% endblock %}

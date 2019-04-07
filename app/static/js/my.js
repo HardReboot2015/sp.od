@@ -1,4 +1,6 @@
-function PBProgress() {
-    document.getElementsByClassName('progress-bar');
+$(function () {
+  $('[data-toggle="popover"]').popover({
+      container: 'span'
+  });
+});
 
-}

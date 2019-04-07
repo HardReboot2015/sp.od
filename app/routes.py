@@ -17,6 +17,7 @@ def is_auth():
     else:
         return LoginForm()
 
+# file validation function
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
@@ -25,7 +26,7 @@ def allowed_file(filename):
 @app.route("/index")
 def index():
     login_form = is_auth()
-    products = Product.query.all()
+    products = Product.query.order_by(Product.date_add.desc()).all()
     categories = Category.query.all()
     return render_template("index.html", login_form=login_form, products=products, categories=categories)
 
@@ -83,25 +84,33 @@ def logout():
 #         manager = p.site.manager.login
 #     return str(manager)
 
-
+# product page
 @app.route('/product/<int:id>')
 def product(id):
     login_form = is_auth()
-
     post_product = Product.query.get(id)
-    product_items = post_product.items.all()
+
     post_product.get_busy_items()
     post_product.get_percent_items_goal()
+    post_product.get_items_list()
+    print(post_product.items_list)
     categories = Category.query.all()
 
-    return render_template("post.html",title = post_product.name, product_items=product_items, product=post_product, login_form=login_form,categories=categories)
-
+    return render_template("post.html",title = post_product.name,  product=post_product, login_form=login_form,categories=categories)
+#all categories page
 @app.route('/categories')
 def categories():
     login_form = is_auth()
     categories = Category.query.all()
-
     return render_template("categories.html", title = "Категории", categories = categories, login_form=login_form)
+# category products page
+@app.route('/category/<int:id>')
+def category(id):
+    login_form = is_auth()
+    category = Category.query.get(id)
+    categories = Category.query.all()
+    products = category.products.all()
+    return render_template("category.html",title=category.name, products=products, login_form=login_form, categories = categories )
 
 @app.route('/settings/<username>', methods = ['GET', 'POST'])
 @login_required

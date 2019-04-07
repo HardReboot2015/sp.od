@@ -1,60 +1,103 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="content_bg p-3 m-0 m-lg-0 mb-lg-3 mb-3">
-    <div class="post_header">
-        <h2 class="big_info-text pl-2">{{ product.name }}</h2>
-    </div>
-
-    <div class="post_images row justify-content-center p-2 ">
-        <div class="post_image-box main_image col-12 col-sm-12 col-lg-6 col-md-6">
-                <img src="{{ product.main_image }}" alt="" class = "post_image ">
+        <div class="post_header">
+            <h2 class="big_info-text pl-2">{{ product.name }}</h2>
         </div>
+
+        <div class="post_images row justify-content-center p-2 ">
+            <div class="post_image-box main_image col-12 col-sm-12 col-lg-6 col-md-6">
+                <img src="{{ product.main_image }}" alt="" class="post_image ">
+            </div>
             <div class=" row col-12 col-sm-12 col-lg-6 col-md-6 align-self-start">
-                {% for i in range(product.second_image|length) %}
-                   <img src="{{ product.second_image[i] }}" alt="" class = "post_image secondary_image col-3 col-lg-6 col-md-6 col-sm-3 p-0 m-auto align-self-center">
+                {% for images in product.second_image %}
+                    <img src="{{ images }}" alt=""
+                         class="post_image secondary_image col-3 col-lg-6 col-md-6 col-sm-3 p-0 m-auto align-self-center">
                 {% endfor %}
+                {##}
+                {#                {% for i in range(product.second_image|length) %}#}
+                {#                    <img src="{{ product.second_image[i] }}" alt=""#}
+                {#                         class="post_image secondary_image col-3 col-lg-6 col-md-6 col-sm-3 p-0 m-auto align-self-center">#}
+                {#                {% endfor %}#}
             </div>
-    </div>
-    <div class="post_info row m-0">
-{#        <div class="flex-grow-1">#}
-{#            <a href="" class="big_info-text">{{ product.site.manager.login }}</a>#}
-{#        </div>#}
-{#        <div>#}
-{#            <h3 class = "big_info-text m-0">#}
-{#                {{ product.price }} грн#}
-{#            </h3>#}
-{#        </div>#}
-        <div class="product-description col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7">
-            <span class="more-info-big-text">Описание:</span>
-            <p class = "text-justify more-info-text">{{ product.description }}</p>
         </div>
-        <div class="more-info col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5">
-            <div class="col-12">
-                <h5 class="more-info-big-text">Тип сбора:</h5> <span class="more-info-text">{{ product.type.name }}</span>
+        <div class="post_info row m-0">
+            <div class="product-description col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7">
+                <span class="more-info-big-text">Описание:</span>
+                <p class="text-justify more-info-text">{{ product.description }}</p>
+                <a href="{{ product.utl }}" class=more-info-text>Посмотреть на сайте</a>
             </div>
-            <div class="col-12">
-                <h5 class="more-info-big-text">Организатор:</h5> <span class="more-info-text">{{ product.site.manager.login }}</span>
-            </div>
-            <div class="col-12">
-                <h5 class="more-info-big-text">Цена:</h5> <span class="more-info-text">{{ product.price }}</span>
-            </div>
-{#            {% if product.type_id != 1 %}#}
+            <div class="more-info col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5" style="border-left: 1px solid #efefef">
                 <div class="col-12">
-                    <h5 class="more-info-big-text">{{ product.type.name }}</h5><span class="more-info-text">: {{ product.goal }}</span>
+                    <h5 class="more-info-big-text">Тип сбора:</h5> <span
+                        class="more-info-text">{{ product.type.name }}</span>
                 </div>
                 <div class="col-12">
-                <div class="progress" style="position:relative; height: 1.4rem">
-                    <div class="progress-bar-title  d-block w-100 p-0 m-0" style="position:absolute;text-align: center; font-size: 1.1rem;">{{ product.count }} из {{ product.goal }}</div>
-                    <div class="progress-bar bg-blue" role="progressbar" style="width: {{ product.percent_items }}%; " aria-valuenow="" aria-valuemin="0" aria-valuemax="{{ product.goal }}"></div>
+                    <h5 class="more-info-big-text">Организатор:</h5> <span class="more-info-text"><a
+                        href="#">{{ product.site.manager.login }}</a></span>
                 </div>
+                <div class="col-12">
+                    <h5 class="more-info-big-text">Цена:</h5> <span class="more-info-text">{{ product.price }}</span>
                 </div>
-                <button class="btn col-12 m-2 p-2 btn-primary btn-sp-primary bg-blue " type = "submit">Order</button>
+                {% if product.type_id != 1 %}
+                    <div class="col-12">
+                        <h5 class="more-info-big-text">{{ product.type.name }}</h5><span
+                            class="more-info-text">: {{ product.goal }}</span>
+                    </div>
+                    <div class="col-12">
+                        <div class="progress" style="position:relative; height: 1.4rem">
+                            <div class="progress-bar-title  d-block w-100 p-0 m-0"
+                                 style="position:absolute;text-align: center; font-size: 1.1rem;">{{ product.count }}
+                                из {{ product.goal }}</div>
+                            <div class="progress-bar bg-blue" role="progressbar"
+                                 style="width: {{ product.percent_items }}%; " aria-valuenow="" aria-valuemin="0"
+                                 aria-valuemax="{{ product.goal }}"></div>
+                        </div>
+                    </div>
+                    <button class="btn col-12 m-2 p-2 btn-primary btn-sp-primary bg-blue " type="submit">Order</button>
+                {% endif %}
+            </div>
+            <div class="order_size col-12 p-3" style="border-top: 1px solid #efefef">
+                {% if product.type_id == 1 and product.sizes %}
+                    <table class="table-sizes "  >
+                        <tr class="table-header"  >
+                            {% for size in product.sizes %}
+                                <th colspan="1" >{{ size }}</th>
+                            {% endfor %}</tr>
+                        {% for i in range(product.items_list|length-1) %} {# Count of table rows #}
+                            {% if product.items_list[i].lock %}{# rows, which goes to order #}
+                                <tr class = "data">
+                                    {% for row in product.items_list[-1] %}
+                                        <td colspan ="1" class = "ordered"><span data-toggle="popover" data-placement="right" data-trigger="hover" data-content="Заказ участника сбора">
+                                            <i class="fas fa-ban text-blue"></i>
+                                        </span>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% else %}
+                                <tr class = "data">
+                                    {% for item in product.items_list[i]  %} {# Table cells #}
 
-{#Сделать прогрес бар#}
-{#            {% endif %}#}
+                                        {% if  product.items_list[i].id_user == Null %}{# free items #}
+                                            <td colspan ="1" class = "to_order"><a href="#" rel = "nofollow">
+                                                <i class="fas fa-cart-arrow-down text-blue"></i>
+                                            </a></td>
 
+                                            {% else %}{# not free items #}
+                                            <td colspan ="1" class = "lock"><span data-toggle="popover" data-placement="right" data-trigger="hover" data-content="Заказ участника сбора">
+                                            <i class="fas fa-lock text-blue"></i>
+                                        </span>
+                                            </td>
+                                        {% endif %}
+
+                                    {% endfor %}
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                {% endif %}
+
+            </div>
         </div>
-
     </div>
-</div>
 {% endblock %}
