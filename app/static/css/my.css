@@ -144,12 +144,16 @@ a:hover{
 }
 
 .post_image-box{
-    height: 65vh;
+    max-height:65vh;
 }
-.post_image {
+.post_image-box .post_image {
     width: auto;
     height: 100%;
     background-size: cover;
+}
+
+.post_image_post {
+        width:100% !important;
 }
 @media (min-width: 1200px){
     .post_image{
@@ -161,7 +165,7 @@ a:hover{
     }
 }
 @media (min-width: 1445px) {
-    .post_image {
+    .post_image_post {
         width:100%;
     }
 }

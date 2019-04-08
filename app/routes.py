@@ -5,7 +5,7 @@ from app import app
 from app import db
 import time
 from app.forms import LoginForm, RegisterForm, EditProfileForm, AddProductForm
-from app.models import User, Product, Category, Type, Site, Items
+from app.models import User, Product, Category, Type, Site, Items, ItemPack
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_required, login_user, logout_user
 
@@ -89,14 +89,79 @@ def logout():
 def product(id):
     login_form = is_auth()
     post_product = Product.query.get(id)
+    item_packs = post_product.item_packs.all()
 
-    post_product.get_busy_items()
-    post_product.get_percent_items_goal()
-    post_product.get_items_list()
-    print(post_product.items_list)
+    items = []
+    if post_product.type_id == 1:
+        for item_pack in item_packs:
+            i = item_pack.items.order_by(Items.id).all()
+            items.append(i)
+    else:
+        item_packs = ItemPack.query.filter_by(id_product = id).first()
+        item_packs.get_busy_items()
+        item_packs.get_percent_items_goal()
     categories = Category.query.all()
 
-    return render_template("post.html",title = post_product.name,  product=post_product, login_form=login_form,categories=categories)
+    return render_template("post.html",title = post_product.name,  product=post_product,item_packs=item_packs,items=items, login_form=login_form,categories=categories)
+
+@app.route('/product/<int:product_id>/<int:id>/order') #order size in product_page
+def order(product_id, id):
+    # if not current_user.is_authenticated:
+        # return redirect(url_for('login', id=product_id))
+    id_user = current_user.id
+    item = Items.query.get(id)
+    item.id_user = id_user
+    db.session.commit()
+    return redirect(url_for("product",id=product_id))
+
+@app.route('/product/<int:product_id>/<int:id_pack>/order_min') #order item in product_page
+# @login_required
+def order_min(product_id,id_pack):
+    # if current_user.is_anonymous():
+    # if not current_user.is_authenticated:
+    #     return redirect(url_for('login'))
+    id_user = current_user.id
+    item_pack = ItemPack.query.get(id_pack)
+    item = item_pack.items.filter_by(id_user = None).first()
+    item.id_user = id_user
+    item_pack.get_busy_items()
+
+    if item_pack.count != 0 and item_pack.count % item_pack.goal == 0:
+        item_pack.status = 2
+        item_pack2 = ItemPack()
+        item_pack2.goal = item_pack.goal
+        item_pack2.id_product = product_id
+        item_pack2.sizes = item_pack.sizes
+        db.session.add(item_pack2)
+
+        for item in range(item_pack.goal):
+            items = Items()
+            items.id_itemPack = id_pack
+            db.session.add(items)
+    db.session.commit()
+
+    return redirect(url_for("product",id = product_id))
+
+@app.route('/product/<int:product_id>/<int:id>/cancel')
+@login_required
+def cancel(product_id, id):
+    item = Items.query.get(id)
+    item.id_user = None
+    db.session.commit()
+    return redirect(url_for("product", id=product_id))
+
+@app.route('/manager_products/<int:id>')
+def manager_products(id):
+    if current_user.is_manage == True:
+        sites = current_user.sites.all()
+        products = []
+        for site in sites:
+            product = site.products.all()
+            for p in product:
+                products.append(p)
+
+    return render_template("manager_products.html", products = products)
+
 #all categories page
 @app.route('/categories')
 def categories():
@@ -175,47 +240,48 @@ def add_product():
                     s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
                     s_file.save('app' + s_path)
                     secondary_img.append(s_path)
+        #
+        s_file = request.files.get('second_image_1', None)
+        if s_file != None:
+            img =  request.files['second_image_1']
+            if img and allowed_file(img.filename):
+                img.filename = file.filename + '_1'
+                s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
+                s_file.save('app' + s_path)
+                secondary_img.append(s_path)
+        #
+        s_file = request.files.get('second_image_2', None)
+        if s_file != None:
+            img = request.files['second_image_2']
+            if img and allowed_file(img.filename):
+                img.filename = file.filename + '_2'
+                s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
+                s_file.save('app' + s_path)
+                secondary_img.append(s_path)
 
-        # s_file = request.files.get('second_image_1', None)
-        # if s_file != None:
-        #     img =  request.files['second_image_1']
-        #     if img and allowed_file(img.filename):
-        #         img.filename = file.filename + '_1'
-        #         s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
-        #         s_file.save('app' + s_path)
-        #         secondary_img.append(s_path)
-        #
-        # s_file = request.files.get('second_image_2', None)
-        # if s_file != None:
-        #     img = request.files['second_image_2']
-        #     if img and allowed_file(img.filename):
-        #         img.filename = file.filename + '_2'
-        #         s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
-        #         s_file.save('app' + s_path)
-        #         secondary_img.append(s_path)
-        #
-        # s_file = request.files.get('second_image_3', None)
-        # if s_file != None:
-        #     img = request.files['second_image_3']
-        #     if img and allowed_file(img.filename):
-        #         img.filename = file.filename + '_3'
-        #         s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
-        #         s_file.save('app' + s_path)
-        #         secondary_img.append(s_path)
-        #
-        # s_file = request.files.get('second_image_4', None)
-        # if s_file != None:
-        #     img = request.files['second_image_4']
-        #     if img and allowed_file(img.filename):
-        #         img.filename = file.filename + '_4'
-        #         s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
-        #         s_file.save('app' + s_path)
-        #         secondary_img.append(s_path)
+        s_file = request.files.get('second_image_3', None)
+        if s_file != None:
+            img = request.files['second_image_3']
+            if img and allowed_file(img.filename):
+                img.filename = file.filename + '_3'
+                s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
+                s_file.save('app' + s_path)
+                secondary_img.append(s_path)
 
+        s_file = request.files.get('second_image_4', None)
+        if s_file != None:
+            img = request.files['second_image_4']
+            if img and allowed_file(img.filename):
+                img.filename = file.filename + '_4'
+                s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
+                s_file.save('app' + s_path)
+                secondary_img.append(s_path)
+        #
         product = Product()
+        item_pack = ItemPack()
         product.name = product_name
         product.url=url
-        product.goal = goal
+        item_pack.goal = goal
         product.description = description
         product.price = price
         product.date_add = now
@@ -226,16 +292,31 @@ def add_product():
         product.second_image = secondary_img
         db.session.add(product)
         db.session.commit()
-        if type == 1:
-            pass
-        elif type == 2:
-            for i in goal:
-                item = Items()
-                item.id_product = product.id
-                db.session.add(item)
-            db.session.commit()
+        item_pack.id_product = product.id
+        db.session.add(item_pack)
+        db.session.commit()
+        if product.type_id == 2:
+            for i in range(item_pack.goal):
+                items = Items()
+                items.id_itemPack = item_pack.id
+                db.session.add(items)
+
+
+        db.session.commit()
+        return redirect(url_for("product", id=product.id))
+
+        # if type == 1:
+        #     pass
+        # elif type == 2:
+        #     for i in goal:
+        #         item = Items()
+        #         item.id_product = product.id
+        #         db.session.add(item)
+        #     db.session.commit()
         # return render_template("post.html",title = product.name, product_items=product.items, product=product, login_form=True,categories=categories)
-    return render_template("add_product.html", title="Добавить товар", categories=categories, types=types, sites=sites, add_form=add_form)
+    return render_template("add_product.html", title="Добавить товар", categories=categories, types=types, sites=sites,
+                           add_form=add_form)
+
 
 
 # @app.route('/add_product/upload')

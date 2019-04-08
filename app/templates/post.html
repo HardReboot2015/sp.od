@@ -7,7 +7,7 @@
 
         <div class="post_images row justify-content-center p-2 ">
             <div class="post_image-box main_image col-12 col-sm-12 col-lg-6 col-md-6">
-                <img src="{{ product.main_image }}" alt="" class="post_image ">
+                <img src="{{ product.main_image }}" alt="" class="post_image post_image_post ">
             </div>
             <div class=" row col-12 col-sm-12 col-lg-6 col-md-6 align-self-start">
                 {% for images in product.second_image %}
@@ -39,65 +39,77 @@
                 <div class="col-12">
                     <h5 class="more-info-big-text">Цена:</h5> <span class="more-info-text">{{ product.price }}</span>
                 </div>
-                {% if product.type_id != 1 %}
-                    <div class="col-12">
-                        <h5 class="more-info-big-text">{{ product.type.name }}</h5><span
-                            class="more-info-text">: {{ product.goal }}</span>
-                    </div>
-                    <div class="col-12">
-                        <div class="progress" style="position:relative; height: 1.4rem">
-                            <div class="progress-bar-title  d-block w-100 p-0 m-0"
-                                 style="position:absolute;text-align: center; font-size: 1.1rem;">{{ product.count }}
-                                из {{ product.goal }}</div>
-                            <div class="progress-bar bg-blue" role="progressbar"
-                                 style="width: {{ product.percent_items }}%; " aria-valuenow="" aria-valuemin="0"
-                                 aria-valuemax="{{ product.goal }}"></div>
-                        </div>
-                    </div>
-                    <button class="btn col-12 m-2 p-2 btn-primary btn-sp-primary bg-blue " type="submit">Order</button>
-                {% endif %}
+                {# поменять вывод в зависимости от ростовки #}
+
             </div>
             <div class="order_size col-12 p-3" style="border-top: 1px solid #efefef">
-                {% if product.type_id == 1 and product.sizes %}
-                    <table class="table-sizes "  >
-                        <tr class="table-header"  >
-                            {% for size in product.sizes %}
-                                <th colspan="1" >{{ size }}</th>
+                {% if product.type_id == 1 and item_packs[0].sizes %}
+                    <table class="table-sizes ">
+                        <tr class="table-header">
+                            {% for size in item_packs[0].sizes %}
+                                <th colspan="1">{{ size }}</th>
                             {% endfor %}</tr>
-                        {% for i in range(product.items_list|length-1) %} {# Count of table rows #}
-                            {% if product.items_list[i].lock %}{# rows, which goes to order #}
-                                <tr class = "data">
-                                    {% for row in product.items_list[-1] %}
-                                        <td colspan ="1" class = "ordered"><span data-toggle="popover" data-placement="right" data-trigger="hover" data-content="Заказ участника сбора">
-                                            <i class="fas fa-ban text-blue"></i>
-                                        </span>
+                        {% for i in range(item_packs|length) %}
+                            <tr class="data">
+                                {% if item_packs[i].status == 2 %}
+                                    {% for item in items[i] %}
+                                        <td colspan="1" class="ordered"><span data-toggle="popover"
+                                                                              data-placement="right"
+                                                                              data-trigger="hover"
+                                                                              data-content="Заблокировано">
+                                    <i class="fas fa-ban text-blue"></i> </span>
                                         </td>
                                     {% endfor %}
-                                </tr>
-                            {% else %}
-                                <tr class = "data">
-                                    {% for item in product.items_list[i]  %} {# Table cells #}
-
-                                        {% if  product.items_list[i].id_user == Null %}{# free items #}
-                                            <td colspan ="1" class = "to_order"><a href="#" rel = "nofollow">
+                                {% else %}
+                                    {% for item in items[i] %} {# Table cells #}
+                                        {% if  item.id_user == None %}{# free items#}
+                                            <td colspan="1" class="to_order"><a
+                                                    href="{{ url_for("order",product_id = product.id,id = item.id) }}"
+                                                    rel="nofollow">
                                                 <i class="fas fa-cart-arrow-down text-blue"></i>
                                             </a></td>
-
-                                            {% else %}{# not free items #}
-                                            <td colspan ="1" class = "lock"><span data-toggle="popover" data-placement="right" data-trigger="hover" data-content="Заказ участника сбора">
-                                            <i class="fas fa-lock text-blue"></i>
-                                        </span>
+                                        {% elif item.id_user == current_user.id %}
+                                            <td colspan="1" class="lock bg-blue text-blue"><a class="text-blue"
+                                                                                              href="{{ url_for("cancel",product_id = product.id,id = item.id) }}"
+                                                                                              rel="nofollow">
+                                                <i class="fas fa-window-close"></i>
+                                            </a></td>
+                                            {% else %}{# not free items#}
+                                            <td colspan="1" class="lock"><span data-toggle="popover"
+                                                                               data-placement="right"
+                                                                               data-trigger="hover"
+                                                                               data-content="Заказ участника сбора">
+                                                <i class="fas fa-lock text-blue"></i>
+                                            </span>
                                             </td>
                                         {% endif %}
 
                                     {% endfor %}
-                                </tr>
-                            {% endif %}
+                                {% endif %}
+                            </tr>
                         {% endfor %}
                     </table>
+                {% elif product.type_id != 1 %}
+                    <div class="col-12">
+                        <h5 class="more-info-big-text">{{ product.type.name }}</h5><span
+                            class="more-info-text">:{{ item_packs.goal }}</span>
+                    </div>
+                    <div class="col-12 p-0">
+                        <div class="progress" style="position:relative; height: 1.4rem">
+                            <div class="progress-bar-title  d-block w-100 p-0 m-0"
+                                 style="position:absolute;text-align: center; font-size: 1.1rem;">{{ item_packs.count }}
+                                из {{ item_packs.goal }}</div>
+                            <div class="progress-bar bg-blue" role="progressbar"
+                                 style="width: {{ item_packs.percent_items }}%; " aria-valuenow="" aria-valuemin="0"
+                                 aria-valuemax="{{ item_packs.goal }}"></div>
+                        </div>
+                    </div>
+                    <a href="{{ url_for("order_min", product_id = product.id, id_pack = item_packs.id) }}"
+                       class="btn btn-primary btn-sp-primary col-12 my-2 p-2 bg-blue ">Заказать</a>
                 {% endif %}
-
             </div>
+
+
         </div>
     </div>
 {% endblock %}

@@ -11,22 +11,26 @@ class Product(db.Model):
     main_image = db.Column(db.String(128), nullable=False, default="")
     second_image = db.Column(db.ARRAY(db.String), nullable=True, default=[])
     url = db.Column(db.String(1024), nullable=False)
-    goal = db.Column(db.Integer, nullable=False)
+    # goal = db.Column(db.Integer, nullable=False)
     date_add = db.Column(db.Integer, nullable=False)
     type_id = db.Column(db.Integer, db.ForeignKey("type.id"))
     site_id = db.Column(db.Integer, db.ForeignKey("site.id"))
     category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
+
+    item_packs = db.relationship('ItemPack', backref = 'product', lazy ='dynamic')
+
+class ItemPack(db.Model):
+    id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
+    id_product = db.Column(db.Integer,db.ForeignKey("product.id"),nullable=False)
+    goal = db.Column(db.Integer, nullable=False)
     sizes = db.Column(db.ARRAY(db.String), nullable=True, default=[])
+    status = db.Column(db.Integer, db.ForeignKey("status.id"))
 
-    items = db.relationship('Items', backref = 'product', lazy='dynamic')
-
-
-    def __repr__(self):
-        return "Product №{} | Name: {}".format(self.id, self.name)
+    items = db.relationship('Items', backref = 'item_pack', lazy='dynamic')
 
     def get_busy_items(self):
-        product = Product.query.get(self.id)
-        self.count = len(product.items.filter(Items.id_user != None).all())
+        itemPack = ItemPack.query.get(self.id)
+        self.count = len(itemPack.items.filter(Items.id_user != None).all())
 
     def get_percent_items_goal(self):
         self.percent_items = self.count / self.goal * 100
@@ -35,35 +39,16 @@ class Product(db.Model):
         self.price_sum = self.count * self.price
         self.percent_price = self.price_sum / self.goal * 100
 
-    def get_items_list(self):
-        self.items_list = []
-        items = self.items.all()
-        c_r = len(items)/self.goal
-
-        for _ in range(round(c_r)):
-            additional = []
-            product_ordered = 0
-
-            for j in range(len(items)):
-                items_ordered = 0
-                if items[len(items)-1].id_user is not None:
-                    items_ordered+=1
-                if items_ordered == self.goal:
-                    product_ordered += 1
-                additional.append(items.pop(0))
-                if j == self.goal - 1:
-                    break
-            self.items_list.append(additional)
-
-        self.items_list.append(product_ordered)
+class Status(db.Model):
+    id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
+    name = db.Column(db.String(128), nullable=False)
 
 class Items(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     size = db.Column(db.String(32), nullable=True)
     payed = db.Column(db.Boolean, default=False)
-    lock = db.Column(db.Boolean, default=False)
     id_color = db.Column(db.Integer, db.ForeignKey("color.id"))
-    id_product = db.Column(db.Integer, db.ForeignKey("product.id"))
+    id_itemPack = db.Column(db.Integer, db.ForeignKey("item_pack.id"))
     id_user = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 
