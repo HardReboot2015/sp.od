@@ -89,11 +89,11 @@ def logout():
 def product(id):
     login_form = is_auth()
     post_product = Product.query.get(id)
-    item_packs = post_product.item_packs.all()
+    item_packs = post_product.item_packs.order_by(ItemPack.status,ItemPack.id).all()
 
     items = []
     if post_product.type_id == 1:
-        for item_pack in item_packs:
+        for item_pack in item_packs:    #Сортировка итемов по возрастанию id
             i = item_pack.items.order_by(Items.id).all()
             items.append(i)
     else:
@@ -105,27 +105,45 @@ def product(id):
     return render_template("post.html",title = post_product.name,  product=post_product,item_packs=item_packs,items=items, login_form=login_form,categories=categories)
 
 @app.route('/product/<int:product_id>/<int:id>/order') #order size in product_page
+@login_required
 def order(product_id, id):
-    # if not current_user.is_authenticated:
-        # return redirect(url_for('login', id=product_id))
     id_user = current_user.id
     item = Items.query.get(id)
+    product = Product.query.get(product_id)
+    product.first_free()
+    item = Items.query.get(product.free_items[item.size])
+
+    item_pack = ItemPack.query.get(item.id_itemPack)
     item.id_user = id_user
+    item_pack.change_status()
+
+    if product.add_rows() :
+        item_pack2 = ItemPack()
+        item_pack2.goal = item_pack.goal
+        item_pack2.id_product = product_id
+        item_pack2.sizes = item_pack.sizes
+        item_pack2.status = 4
+        db.session.add(item_pack2)
+        db.session.commit()
+        for size in item_pack.sizes:
+            items = Items()
+            items.id_itemPack = item_pack2.id
+            items.size = size
+            db.session.add(items)
+    # сделать бронирование первого свободного размера
+
     db.session.commit()
     return redirect(url_for("product",id=product_id))
 
 @app.route('/product/<int:product_id>/<int:id_pack>/order_min') #order item in product_page
-# @login_required
+@login_required
 def order_min(product_id,id_pack):
-    # if current_user.is_anonymous():
-    # if not current_user.is_authenticated:
-    #     return redirect(url_for('login'))
     id_user = current_user.id
     item_pack = ItemPack.query.get(id_pack)
     item = item_pack.items.filter_by(id_user = None).first()
     item.id_user = id_user
     item_pack.get_busy_items()
-
+    item_pack.change_status()
     if item_pack.count != 0 and item_pack.count % item_pack.goal == 0:
         item_pack.status = 2
         item_pack2 = ItemPack()
@@ -133,10 +151,11 @@ def order_min(product_id,id_pack):
         item_pack2.id_product = product_id
         item_pack2.sizes = item_pack.sizes
         db.session.add(item_pack2)
+        db.session.commit()
 
         for item in range(item_pack.goal):
             items = Items()
-            items.id_itemPack = id_pack
+            items.id_itemPack = item_pack2.id
             db.session.add(items)
     db.session.commit()
 
@@ -148,6 +167,9 @@ def cancel(product_id, id):
     item = Items.query.get(id)
     item.id_user = None
     db.session.commit()
+    product = Product.query.get(product_id)
+    item.item_pack.change_status()
+    product.delete_excess()
     return redirect(url_for("product", id=product_id))
 
 @app.route('/manager_products/<int:id>')
@@ -225,13 +247,13 @@ def add_product():
         site = request.form['site']
         file = request.files['main_img']
         now = str(int(time.time()))
-        if file and allowed_file(file.filename):
+        if file and allowed_file(file.filename): #add main image
             file.filename = translit(product_name, reversed=True)+ '_'+now
             main_img = app.config['UPLOAD_FOLDER'] + secure_filename(file.filename)
             file.save('app' + main_img)
         inputs = ['second_image_1','second_image_2','second_image_3','second_image_4']
         secondary_img = []
-        for inp in inputs:
+        for inp in inputs: #add secondary_images
             s_file = request.files.get(inp, None)
             if s_file != None:
                 img = request.files[inp]
@@ -241,41 +263,41 @@ def add_product():
                     s_file.save('app' + s_path)
                     secondary_img.append(s_path)
         #
-        s_file = request.files.get('second_image_1', None)
-        if s_file != None:
-            img =  request.files['second_image_1']
-            if img and allowed_file(img.filename):
-                img.filename = file.filename + '_1'
-                s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
-                s_file.save('app' + s_path)
-                secondary_img.append(s_path)
+        # s_file = request.files.get('second_image_1', None)
+        # if s_file != None:
+        #     img =  request.files['second_image_1']
+        #     if img and allowed_file(img.filename):
+        #         img.filename = file.filename + '_1'
+        #         s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
+        #         s_file.save('app' + s_path)
+        #         secondary_img.append(s_path)
+        # #
+        # s_file = request.files.get('second_image_2', None)
+        # if s_file != None:
+        #     img = request.files['second_image_2']
+        #     if img and allowed_file(img.filename):
+        #         img.filename = file.filename + '_2'
+        #         s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
+        #         s_file.save('app' + s_path)
+        #         secondary_img.append(s_path)
         #
-        s_file = request.files.get('second_image_2', None)
-        if s_file != None:
-            img = request.files['second_image_2']
-            if img and allowed_file(img.filename):
-                img.filename = file.filename + '_2'
-                s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
-                s_file.save('app' + s_path)
-                secondary_img.append(s_path)
-
-        s_file = request.files.get('second_image_3', None)
-        if s_file != None:
-            img = request.files['second_image_3']
-            if img and allowed_file(img.filename):
-                img.filename = file.filename + '_3'
-                s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
-                s_file.save('app' + s_path)
-                secondary_img.append(s_path)
-
-        s_file = request.files.get('second_image_4', None)
-        if s_file != None:
-            img = request.files['second_image_4']
-            if img and allowed_file(img.filename):
-                img.filename = file.filename + '_4'
-                s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
-                s_file.save('app' + s_path)
-                secondary_img.append(s_path)
+        # s_file = request.files.get('second_image_3', None)
+        # if s_file != None:
+        #     img = request.files['second_image_3']
+        #     if img and allowed_file(img.filename):
+        #         img.filename = file.filename + '_3'
+        #         s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
+        #         s_file.save('app' + s_path)
+        #         secondary_img.append(s_path)
+        #
+        # s_file = request.files.get('second_image_4', None)
+        # if s_file != None:
+        #     img = request.files['second_image_4']
+        #     if img and allowed_file(img.filename):
+        #         img.filename = file.filename + '_4'
+        #         s_path = app.config['UPLOAD_FOLDER'] + secure_filename(img.filename)
+        #         s_file.save('app' + s_path)
+        #         secondary_img.append(s_path)
         #
         product = Product()
         item_pack = ItemPack()

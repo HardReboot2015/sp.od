@@ -155,6 +155,7 @@ a:hover{
 .post_image_post {
         width:100% !important;
 }
+
 @media (min-width: 1200px){
     .post_image{
         height: auto;
@@ -162,11 +163,15 @@ a:hover{
     }
     .post_image-box{
         height: auto;
+        justify-content: center !important;
     }
 }
 @media (min-width: 1445px) {
     .post_image_post {
         width:100%;
+    }
+    .post_image{
+        width: 100% !important;
     }
 }
 

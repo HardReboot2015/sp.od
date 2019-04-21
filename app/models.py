@@ -19,25 +19,92 @@ class Product(db.Model):
 
     item_packs = db.relationship('ItemPack', backref = 'product', lazy ='dynamic')
 
+    def first_free(self): #первый свободный итем каждого размера
+        all_itemPacks = self.item_packs
+        if all_itemPacks is not None:
+            sizes = set(all_itemPacks[0].sizes)
+            self.free_items = dict.fromkeys(sizes, 0)
+            for itemPack in all_itemPacks:
+                if itemPack.status == 3 or itemPack.status == 4:
+                    items = itemPack.items.order_by(Items.id).all()
+                    if items is not None:
+                        for item in items:
+                            if item.id_user is None:
+                                if self.free_items[item.size] == 0 or item.id < self.free_items[item.size]:
+
+                                    self.free_items[item.size] = item.id
+        return self.free_items
+
+    def add_rows(self):
+        self.first_free()
+        for k in self.free_items.keys():
+            if self.free_items[k] == 0:
+                return True
+        return False
+
+    def delete_excess(self):# удалить лишний пустой итемпак
+        count_excess = len(self.item_packs.filter_by(status=4).all())
+        if count_excess > 1:
+           for item_pack in self.item_packs:
+                if count_excess == 1: break
+                Items.query.filter_by(id_itemPack = item_pack.id).delete()
+                ItemPack.query.filter_by(id=item_pack.id).delete()
+                count_excess -= 1
+                db.session.commit()
+
+
+
 class ItemPack(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
     id_product = db.Column(db.Integer,db.ForeignKey("product.id"),nullable=False)
     goal = db.Column(db.Integer, nullable=False)
     sizes = db.Column(db.ARRAY(db.String), nullable=True, default=[])
     status = db.Column(db.Integer, db.ForeignKey("status.id"))
+    date_collect = db.Column(db.Integer, nullable=True)
 
     items = db.relationship('Items', backref = 'item_pack', lazy='dynamic')
 
-    def get_busy_items(self):
+
+    def get_free_items(self):
+        itemPack = ItemPack.query.get(self.id)
+        items = itemPack.items.all()
+        for item in items:
+            if item.id_user is None:    #eсли есть хоть один свободный элемент данной ростовки
+                return True             #возвращаем True, то есть есть свободные итемы
+        return False                    #иначе - False(ростовка собрана)
+
+    def get_busy_items(self):           #количество занятых элементов ростовки
         itemPack = ItemPack.query.get(self.id)
         self.count = len(itemPack.items.filter(Items.id_user != None).all())
 
-    def get_percent_items_goal(self):
+    def get_percent_items_goal(self):   #процент количества итемов от цели
         self.percent_items = self.count / self.goal * 100
 
-    def get_percent_price_goal(self):
+    def get_percent_price_goal(self):   #процент собранного количества денег от цели(денежной)
         self.price_sum = self.count * self.price
         self.percent_price = self.price_sum / self.goal * 100
+
+    def change_status(self):
+        self.get_busy_items()
+        if self.count == 0:
+            self.status = 4
+        elif self.count != len(self.items.all()):
+            self.status = 3
+        else:
+            for item in self.items:
+                if item.confirmed == False:
+                    self.status = 2
+                elif item.payed == False:
+                    self.status = 1
+                else:
+                    self.status = None
+        db.session.commit()
+
+
+
+
+
+
 
 class Status(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True, autoincrement=True)
@@ -47,6 +114,7 @@ class Items(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     size = db.Column(db.String(32), nullable=True)
     payed = db.Column(db.Boolean, default=False)
+    confirmed = db.Column(db.Boolean, default=False)
     id_color = db.Column(db.Integer, db.ForeignKey("color.id"))
     id_itemPack = db.Column(db.Integer, db.ForeignKey("item_pack.id"))
     id_user = db.Column(db.Integer, db.ForeignKey("user.id"))
