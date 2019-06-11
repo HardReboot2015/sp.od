@@ -16,7 +16,10 @@ a:hover{
 .text-blue{
     color: #0086b5;
 }
+.btn-sp-primary{
+      border-color: #0086b5;
 
+}
 .btn-sp-primary:hover{
     background-color: rgba(0,134,181,0.75);
     border: 1px solid #0086b5;
@@ -143,12 +146,20 @@ a:hover{
 	font-weight: 500;
 }
 
+@media(min-width: 768px){
+    .more-info{
+        border-left: 1px solid #efefef;
+    }
+}
+
 .post_image-box{
-    max-height:65vh;
+    /*max-height:65vh;*/
 }
 .post_image-box .post_image {
-    width: auto;
-    height: 100%;
+    /*width: auto;*/
+    /*height: 100%;*/
+    height: auto;
+    width: 100%;
     background-size: cover;
 }
 
@@ -156,24 +167,24 @@ a:hover{
         width:100% !important;
 }
 
-@media (min-width: 1200px){
-    .post_image{
-        height: auto;
-        width: 100%;
-    }
-    .post_image-box{
-        height: auto;
-        justify-content: center !important;
-    }
-}
-@media (min-width: 1445px) {
-    .post_image_post {
-        width:100%;
-    }
-    .post_image{
-        width: 100% !important;
-    }
-}
+/*@media (min-width: 1200px){*/
+    /*.post_image{*/
+        /*height: auto !important;*/
+        /*width: 100% !important;*/
+    /*}*/
+    /*.post_image-box{*/
+        /*height: auto;*/
+        /*justify-content: center !important;*/
+    /*}*/
+/*}*/
+/*@media (min-width: 1445px) {*/
+    /*.post_image_post {*/
+        /*width:100%;*/
+    /*}*/
+    /*.post_image{*/
+        /*width: 100% !important;*/
+    /*}*/
+/*}*/
 
 
 

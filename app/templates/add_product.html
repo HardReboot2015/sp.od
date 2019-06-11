@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
+    <script src="/static/js/jquery-3.3.1.js"></script>
+
     <div class = "content_bg  m-0 m-lg-0 mb-lg-3 mb-3 col">
         <div class="post_header m-2">
             <h2 >Добавить товар</h2>
@@ -15,13 +17,19 @@
                     <label for="product_description">Описание</label>
                     <textarea name="{{ add_form.description.name }}" rows="4" id="product_description" maxlength=512 class="form-control text-left"></textarea>
                 </div>
-                <div class="form-group">
+            <div class="row p-0">
+                <div class="form-group col-12 col-md-8">
                     <label for="product_url">Ссылка</label>
                     <input type="text" id = "product_url" name = "{{ add_form.url.name }}"class ="form-control">
                 </div>
+                <div class="form-group col-12 col-md-4">
+                    <label for="product_url">Артикул</label>
+                    <input type="text" id = "product_article" name = "{{ add_form.article.name }}"class ="form-control">
+                </div>
+            </div>
 
                 <div class = " row pt-3" style = "border-top:1px solid #efefef">
-                    <div class="form-group col-md-4 col-12 ">
+                    <div class="form-group col-md-4 col-12">
                         <label for="product_site">Сайт</label>
                         <select name="{{ add_form.site.name }}"  id="product_site" class = "form-control ">
                             {% for site in sites%}
@@ -37,16 +45,17 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <script type = "text/javascript">
-                        $("#product_type").change(function(){
-                            if ($('#product_type').val()== 1) {
-                                $("product_goal").maxValue = 48;
-                            }
-                        })
-                    </script>
                     <div class="form-group col-md-4 col-12 ">
                         <label for="product_type">Тип сбора</label>
-                        <select name="{{ add_form.type.name }}"  id="product_type" class = "form-control">
+                        <select name="{{ add_form.type.name }}"  onchange="function f(){
+                          var select = $('#product_type');
+                            if (select.val() == '1') {
+                               $('#sizes').show();
+                            }else{
+                                $('#product_goal').maxValue = 48;
+                                $('#sizes').hide();
+                            }
+                        };f();" id="product_type" class = "form-control">
                             {% for type in types%}
                                 <option value="{{ type.id }}">{{ type.name}}</option>
                             {% endfor %}
@@ -56,12 +65,18 @@
                 <div class="row ">
                     <div class="form-group col-12 col-md-4">
                         <label for="product_price">Цена</label>
-                        <input type="number" name="{{ add_form.price.name }}" id="product_price" class="form-control text-left">
+                        <input type="number" name="{{ add_form.price.name }}" id="product_price" class="form-control text-left" min = "0">
                     </div>
                     <div class="form-group col-md-4 col-12">
                         <label for="product_goal">Цель</label>
-                        <input type="number"  name = "{{ add_form.goal.name }}" id = "product_goal" class ="form-control">
+                        <input type="number"  name = "{{ add_form.goal.name }}" id = "product_goal" class ="form-control" min = "0">
                     </div>
+
+                    <div class="form-group col-md-4 col-12" id = "sizes">
+                        <label for="product_sizes">Размеры</label>
+                        <input type="text"  name = "{{ add_form.sizes.name }}" id = "product_sizes" class ="form-control" >
+                    </div>
+
                 </div>
                 <div class="row pt-3" style = "border-top:1px solid #efefef">
                     <div class="form-group col-12 ">
@@ -84,20 +99,28 @@
                         <input type="file" name = "second_image_4" id = "secondary_image" class = "form-control">
                     </div>
                 </div>
-                <div class="row pt-3" style = "border-top:1px solid #efefef">
-                    <div class="form-group">
+{#                <div class="row pt-3" style = "border-top:1px solid #efefef">#}
+{#                    <div class="form-group">#}
 {#                        <label for="items">Размер</label>#}
-                    </div>
-                    <script type = "text/javascript">
+{#                    </div>#}
+{#                    <script type = "text/javascript">#}
                         {#вывести инпуты в зависимости от введенного в поле цель #}
-                    </script>
-                </div>
+{#                    </script>#}
+{#                </div>#}
+
+
+
                 <div class="row justify-content-center">
                     <button type="submit" name = "{{ add_form.submit.name }}" class="btn mb-1 btn-primary bg-blue btn-sp-primary w-50 my-3">Сохранить</button>
                 </div>
-
             </form>
         </div>
 
     </div>
+{#    <script type="text/javascript">#}
+{#                    var a = document.getElementById("product_type").value;#}
+{#                    if (a != 1){#}
+{#                        document.getElementById("link_go").style.visibility = hidden;#}
+{#                    }#}
+{#    </script>#}
 {% endblock %}

@@ -1,7 +1,7 @@
 {% for product in products %}
-<div class="content_bg p-3 m-0 m-lg-0 mb-lg-3">
+<div class="content_bg p-3 m-0 m-lg-0 mb-lg-3 mb-2" >
     <div class="post_header">
-        <a href="{{ url_for('product', id = product.id) }}" class="big_info-text pl-2">{{ product.name }}</a>
+        <a href="{{ url_for('product', id = product.id) }}" class="big_info-text pl-2 d-flex">{{ product.name }}</a>
     </div>
     <div class="post_images row justify-content-center">
         <div class="post_image-box justify-content-center col-8">

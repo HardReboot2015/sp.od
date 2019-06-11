@@ -2,7 +2,7 @@
 {% block content %}
 <div class="row col-12 p-0 m-0">
 {% for category in categories %}
-    <div class = "col-4 px-1">
+    <div class = "col-4 px-1 d-inline-flex">
     <div class="card col-12 content_bg p-3 m-0 mb-lg-3">
         <img class="card-img-top" src="{% if category.products.all()|length!= 0 %}{{ category.products[0].main_image }}{% else %}/static/images/product_images/palto_01.jpg{% endif %}" alt="Card image cap">
             <div class="card-body">

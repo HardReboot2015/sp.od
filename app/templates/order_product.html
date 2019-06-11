@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class = "content_bg  m-0 m-lg-0 mb-lg-3 mb-3 px-3  col">
+        <div class="post_header m-2">
+            <h2 >Заказать товар</h2>
+        </div>
+        <form method="post" action="">
+            {{ morder_form.hidden_tag() }}
+
+            <div class="form-group">
+                <label for="product_name" >Наименование товара</label>
+                <input type="text" name="{{ morder_form.name.name }}"  id="product_name" class="form-control text-left" >
+            </div>
+        <div class="row p-0 ">
+            <div class="form-group col-md-6 col-12">
+                <label for="product_category">Категория</label>
+                <select name="{{ morder_form.category.name }}"  id="product_category" class = "form-control ">
+                    {% for category in categories%}
+                        <option value="{{ category.id }}">{{ category.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-md-6 col-12  ">
+                <label for="product_site">Сайт</label>
+                <select name="{{ morder_form.site.name }}"  id="product_site" class = "form-control ">
+                    {% for site in sites%}
+                        <option value="{{ site.id }}">{{ site.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+            <div class="form-group col-12 col-md-12 p-0">
+                <label for="product_url">Ссылка</label>
+                <input type="text" id = "product_url" name = "{{ morder_form.url.name }}"class ="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="product_description">Дополнительно</label>
+                <textarea name="{{ morder_form.additional.name }}" rows="4" id="product_description" maxlength=512 class="form-control text-left"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Инфо</label>
+                <p class = "text-justify">Как только организатор откроет сбор товара, вам прийдет уведомление в систему для того, чтобы вы заказали необходимый размер или количество товара.
+                    Или поставьте галочку, чтобы уведомление пришло на почтовый адрес:<span class = "e-mail font-weight-bold">   {{ current_user.email }}</span></p>
+                <div class="row m-3">
+                    <input type="checkbox" class = "form-check-input" id ="SendMailCheck" value="false">
+                    <label class="form-check-label" name = "{{ morder_form.send_mail.name }}" for="SendMailCheck">Отправить уведомление на почту</label>
+                </div>
+            </div>
+
+                <div class="row justify-content-center">
+                    <button type="submit" name ="{{ morder_form.submit.name }}" class="btn mb-1 btn-primary bg-blue btn-sp-primary w-75">Заказать</button>
+                </div>
+
+            <div class="form-group">
+                <div class="row justify-content-center">
+                    <a href ="{{ url_for("index") }}" class="btn mb-1 btn-light btn-sp-light w-25">Отмена</a>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

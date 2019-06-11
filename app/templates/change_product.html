@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="content_bg p-3 m-0 m-lg-0 mb-lg-3 mb-3">
+        <form method="post" action="" enctype="multipart/form-data">
+            {{ cp_form.hidden_tag() }}
+            <div class="form-group">
+                <label for="product_name" >Наименование товара</label>
+                <input type="text" name="{{ cp_form.name.name }}"  id="product_name" class="form-control text-left" value="{{ product.name }}">
+            </div>
+            <div class="form-group">
+                <label for="product_description">Описание</label>
+                <textarea name="{{ cp_form.description.name }}" rows="4" id="product_description" maxlength=512 class="form-control text-left">{{ product.description }}</textarea>
+            </div>
+            <div class="row p-0">
+                <div class="form-group col-12 col-md-8">
+                    <label for="product_url">Ссылка</label>
+                    <input type="text" id = "product_url" name = "{{ cp_form.url.name }}" class ="form-control" value="{{ product.url }}">
+                </div>
+                <div class="form-group col-12 col-md-4">
+                    <label for="product_article">Артикул</label>
+                    <input type="text" id = "product_article" name = "{{ cp_form.article.name }}"class ="form-control" value="{{ product.article }}">
+                </div>
+            </div>
+            <div class = " row pt-3" style = "border-top:1px solid #efefef">
+                <div class="form-group col-md-4 col-12 ">
+                    <label for="product_site">Сайт</label>
+                    <select name="{{ cp_form.site.name }}"  id="product_site" class = "form-control">
+                        {% for site in sites%}
+                            <option value="{{ site.id }}" {% if site.id == product.site_id %} selected{% endif %}>{{ site.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-4 col-12 ">
+                    <label for="product_category">Категория</label>
+                    <select name="{{ cp_form.category.name }}"  id="product_category" class = "form-control">
+                        {% for category in categories %}
+                            <option value="{{ category.id }} " {% if category.id == product.category_id %} selected {% endif %}>{{ category.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <script type = "text/javascript">
+                    $("#product_type").change(function(){
+                        if ($('#product_type').val()== 1) {
+                            $("product_goal").maxValue = 48;
+                        }
+                    })
+                </script>
+                <div class="form-group col-md-4 col-12 ">
+                    <label for="product_type">Тип сбора</label>
+                    <select name="{{ cp_form.type.name }}" disabled id="product_type" class = "form-control">
+                        <option value="{{ product.type_id }}">{{ product.type.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row ">
+                <div class="form-group col-12 col-md-4">
+                    <label for="product_price">Цена</label>
+                    <input type="number" name="{{ cp_form.price.name }}" id="product_price" class="form-control text-left" min = "0" value="{{ product.price }}">
+                </div>
+                <div class="form-group col-md-4 col-12">
+                    <label for="product_goal">Цель</label>
+                    <input type="number"  name = "{{ cp_form.goal.name }}" id = "product_goal" class ="form-control" min = "0" value="{{ product.item_packs[0].goal }}">
+                </div>
+                {% if product.type_id == 1 and current_user.is_admin%}
+                    <div class="form-group col-md-4 col-12">
+                        <label for="product_sizes">Размеры</label>
+                        <input type="text"  name = "{{ cp_form.sizes.name }}" id = "product_sizes" class ="form-control" min = "0" value="{{ sizes }}">
+                    </div>
+                {% endif %}
+            </div>
+            {# Сделать изменение картинки #}
+            {#                <div class="row pt-3" style = "border-top:1px solid #efefef">#}
+            {#                    <div class="form-group col-12 ">#}
+            {#                        <label for="main_image">Главное фото:</label>#}
+            {#                        <input type="file" name = "main_img" id = "main_image" class = "form-control" value ="{{ product.main_image }}">#}
+            {#                    </div>#}
+            {##}
+            {#                    <label for="secondary_image" class = "col-12">Дополнительные фото:</label>#}
+            {#                    <div class="form-group col-md-6 col-12">#}
+            {##}
+            {#                        <input type="file" name = "second_image_1" id = "secondary_image" class = "form-control" value ="">#}
+            {#                    </div>#}
+            {#                    <div class="form-group col-md-6 col-12">#}
+            {#                        <input type="file" name = "second_image_2" id = "secondary_image" class = "form-control">#}
+            {#                    </div>#}
+            {#                    <div class="form-group col-md-6 col-12">#}
+            {#                        <input type="file" name = "second_image_3" id = "secondary_image" class = "form-control">#}
+            {#                    </div>#}
+            {#                    <div class="form-group col-md-6 col-12">#}
+            {#                        <input type="file" name = "second_image_4" id = "secondary_image" class = "form-control">#}
+            {#                    </div>#}
+            {#                </div>#}
+            {#                <div class="row pt-3" style = "border-top:1px solid #efefef">#}
+            {#                    <div class="form-group">#}
+            {#                        <label for="items">Размер</label>#}
+            {#                    </div>#}
+            {#                </div>#}
+
+            <div class="row justify-content-center">
+                <button type="submit" name = "{{ cp_form.submit.name }}" class="btn mb-1 btn-primary bg-blue btn-sp-primary w-50 my-3">Сохранить</button>
+            </div>
+            <div class="row justify-content-center">
+                <a href="{{ url_for("delete_product", id = product.id) }}" class="btn mb-1 btn-light btn-sp-light w-25">Удалить</a>
+            </div>
+        </form>
+    </div>
+{% endblock%}

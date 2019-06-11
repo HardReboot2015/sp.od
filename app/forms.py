@@ -64,10 +64,42 @@ class AddProductForm(FlaskForm):
     second_image_3 = FileField("SecondaryImage3", validators=[FileRequired()])
     second_image_4 = FileField("SecondaryImage4", validators=[FileRequired()])
     url = StringField("Url", validators=[DataRequired()])
+    article = StringField("Article", validators=[DataRequired()])
     goal = StringField("Goal", validators=[DataRequired()])
     type = SelectField("Type", validators=[DataRequired()])
     site =SelectField("Site", validators=[DataRequired()])
     category = SelectField("Category", validators=[DataRequired()])
+    sizes = StringField("Sizes", validators=[DataRequired()])
+
     submit = SubmitField("Save")
 
+class ChangeProductForm(FlaskForm):
+    name = StringField("Product_name", validators=[DataRequired()])
+    price = StringField("Price", validators=[DataRequired()])
+    description = TextAreaField("Description", validators=[DataRequired()])
+    # main_img = FileField("MainImage", validators=[FileRequired()])
+    # second_image_1 = FileField("SecondaryImage1", validators=[FileRequired()])
+    # second_image_2 = FileField("SecondaryImage2", validators=[FileRequired()])
+    # second_image_3 = FileField("SecondaryImage3", validators=[FileRequired()])
+    # second_image_4 = FileField("SecondaryImage4", validators=[FileRequired()])
+    url = StringField("Url", validators=[DataRequired()])
+    article = StringField("Article", validators=[DataRequired()])
+    goal = StringField("Goal", validators=[DataRequired()])
+    type = SelectField("Type", validators=[DataRequired()])
+    site = SelectField("Site", validators=[DataRequired()])
+    category = SelectField("Category", validators=[DataRequired()])
+    sizes = StringField("Sizes", validators=[DataRequired()])
+    submit = SubmitField("Save")
 
+class OrderForm(FlaskForm):
+    count_order = StringField("CountField")
+    submit = SubmitField("Order")
+
+class MakeOrderForm(FlaskForm):
+    name = StringField("Product_name", validators=[DataRequired()])
+    site = SelectField("Site", validators=[DataRequired()])
+    category = SelectField("Category", validators=[DataRequired()])
+    url = StringField("Url", validators=[DataRequired()])
+    additional = TextAreaField("Additional")
+    send_mail = BooleanField('SendMail')
+    submit = SubmitField("Order")

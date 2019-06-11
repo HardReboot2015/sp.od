@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="content_bg p-3 m-0 m-lg-0 mb-lg-3 mb-3">
-        <div class="post_header">
-            <h2 class="big_info-text pl-2">{{ product.name }}</h2>
+        <div class="post_header row justify-content-between px-3">
+            <h2 class="big_info-text pl-2 ">{{ product.name }}</h2>
+            {% if current_user.is_admin or current_user.id == product.site.manager_id %}
+                <a href="{{ url_for("change_product", id = product.id) }}" class = "text-blue more-info-text align-self-center">Изменить</a>
+            {% endif %}
+
         </div>
 
         <div class="post_images row justify-content-center p-2 ">
@@ -25,9 +29,9 @@
             <div class="product-description col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7">
                 <span class="more-info-big-text">Описание:</span>
                 <p class="text-justify more-info-text">{{ product.description }}</p>
-                <a href="{{ product.utl }}" class=more-info-text>Посмотреть на сайте</a>
+                <a href="{{ product.url }}" class="more-info-text">Посмотреть на сайте</a>
             </div>
-            <div class="more-info col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5" style="border-left: 1px solid #efefef">
+            <div class="more-info col-12 col-md-5 p-0 mt-2 m-md-0 ">
                 <div class="col-12">
                     <h5 class="more-info-big-text">Тип сбора:</h5> <span
                         class="more-info-text">{{ product.type.name }}</span>
@@ -35,6 +39,9 @@
                 <div class="col-12">
                     <h5 class="more-info-big-text">Организатор:</h5> <span class="more-info-text"><a
                         href="#">{{ product.site.manager.login }}</a></span>
+                </div>
+                <div class="col-12">
+                    <h5 class="more-info-big-text">Артикул:</h5> <span class="more-info-text">{{ product.article}}</span>
                 </div>
                 <div class="col-12">
                     <h5 class="more-info-big-text">Цена:</h5> <span class="more-info-text">{{ product.price }}</span>
@@ -45,7 +52,7 @@
             <div class="order_size col-12 p-3" style="border-top: 1px solid #efefef">
                 {% if product.type_id == 1 and item_packs[0].sizes %}
                     <table class="table-sizes ">
-                        <tr class="table-header">
+                        <tr class="table-header" style="white-space: nowrap;">
                             {% for size in item_packs[0].sizes %}
                                 <th colspan="1">{{ size }}</th>
                             {% endfor %}</tr>
@@ -64,13 +71,13 @@
                                     {% for item in items[i] %} {# Table cells #}
                                         {% if  item.id_user == None %}{# free items#}
                                             <td colspan="1" class="to_order"><a
-                                                    href="{{ url_for("order",product_id = product.id,id = item.id) }}"
+                                                    href="{{ url_for("order",product_id = product.id,id = item.id, type = product.type_id) }}"
                                                     rel="nofollow">
                                                 <i class="fas fa-cart-arrow-down text-blue"></i>
                                             </a></td>
                                         {% elif item.id_user == current_user.id %}
                                             <td colspan="1" class="lock bg-blue text-blue"><a class="text-blue"
-                                                                                              href="{{ url_for("cancel",product_id = product.id,id = item.id) }}"
+                                                                                              href="{{ url_for("cancel",product_id = product.id,id = item.id, type = product.type_id) }}"
                                                                                               rel="nofollow">
                                                 <i class="fas fa-window-close"></i>
                                             </a></td>
@@ -78,8 +85,12 @@
                                             <td colspan="1" class="lock"><span data-toggle="popover"
                                                                                data-placement="right"
                                                                                data-trigger="hover"
+                                                    {% if current_user.is_admin %}
+                                                                               data-content="{{ item.user.login }}"
+                                                    {% else %}
                                                                                data-content="Заказ участника сбора">
-                                                <i class="fas fa-lock text-blue"></i>
+                                                    {% endif %}
+                                            <i class="fas fa-lock text-blue"></i>
                                             </span>
                                             </td>
                                         {% endif %}
@@ -90,26 +101,36 @@
                         {% endfor %}
                     </table>
                 {% elif product.type_id != 1 %}
-                    <div class="col-12">
+                    <div class="col-12 p-0">
                         <h5 class="more-info-big-text">{{ product.type.name }}</h5><span
-                            class="more-info-text">:{{ item_packs.goal }}</span>
+                            class="more-info-text">: {{ item_packs.goal }}</span>
+                    </div>
+                    <div class="row px-3 pb-3" style = "line-height: 1.5rem">
+                        <form action="{{ url_for("order_min", product_id=product.id) }}" method = "post" class="d-flex col-12 col-md-7 m-0 p-0">
+                            <input type="number" class ="form-control col-4 " name = "{{ order_form.count_order.name }}" style = "" id = "count_items" value="1" >
+                            <button type = "submit" name="{{ order_form.submit.name }}"
+                                    class="btn-primary btn btn-sp-primary col-8 bg-blue ml-md-2 ml-2 my-md-0 p-0">Заказать</button>
+                        </form>
+                        {% if current_user.is_authenticated %}
+                            <div class = "col-12 col-md-5 p-0 my-2 my-md-0 px-md-3 align-self-center">
+                                <h5 class = "more-info-big-text">Вы заказали</h5><span class = "more-info-text">: {{ current_user.count_ordered }}</span>
+                                <a href="{{ url_for("cancel", product_id = product.id , id = current_user.id, type = product.type_id) }}" class="text-blue">Отмена</a>
+                            </div>
+                        {% endif %}
                     </div>
                     <div class="col-12 p-0">
-                        <div class="progress" style="position:relative; height: 1.4rem">
+                        <div class="progress" style="position:relative; height: 1.7rem">
                             <div class="progress-bar-title  d-block w-100 p-0 m-0"
-                                 style="position:absolute;text-align: center; font-size: 1.1rem;">{{ item_packs.count }}
+                                 style="position:absolute;text-align: center; font-size: 1.1rem;">{{ item_packs.counts }}
                                 из {{ item_packs.goal }}</div>
                             <div class="progress-bar bg-blue" role="progressbar"
                                  style="width: {{ item_packs.percent_items }}%; " aria-valuenow="" aria-valuemin="0"
                                  aria-valuemax="{{ item_packs.goal }}"></div>
                         </div>
                     </div>
-                    <a href="{{ url_for("order_min", product_id = product.id, id_pack = item_packs.id) }}"
-                       class="btn btn-primary btn-sp-primary col-12 my-2 p-2 bg-blue ">Заказать</a>
+
                 {% endif %}
             </div>
-
-
         </div>
     </div>
 {% endblock %}
