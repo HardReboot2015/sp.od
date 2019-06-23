@@ -14,7 +14,7 @@ a:hover{
 }
 
 .text-blue{
-    color: #0086b5;
+    color: #0086b5 !important;
 }
 .btn-sp-primary{
       border-color: #0086b5;
@@ -260,4 +260,12 @@ a:hover{
 .settings-menu-item:hover{
      color: #0086b5;
     text-decoration: none;
+}
+
+pre{
+    font-family: Arial, "Noto Sans", sans-serif;
+    display: flex;
+    white-space: normal;
+    word-break:break-word;
+    text-align: justify;
 }

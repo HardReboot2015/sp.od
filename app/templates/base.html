@@ -10,14 +10,17 @@
     {% endif %}
     <link rel="stylesheet" href="/static/css/bootstrap.css">
     <link rel="stylesheet" href="/static/css/my.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
 </head>
 <body style="background-color: #f4f4f4; line-height: 1.25; ">
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-blue">
         <div class="container">
             <a class="sp-logo" href="{{ url_for("index") }}">SP</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -34,7 +37,8 @@
                             <a class="dropdown-item" href="{{ url_for("categories") }}">Все</a>
                             <div class="dropdown-divider"></div>
                             {% for category in categories %}
-                            <a class="dropdown-item " href="{{ url_for('category', id = category.id) }}">{{ category.name }}</a>
+                                <a class="dropdown-item "
+                                   href="{{ url_for('category', id = category.id) }}">{{ category.name }}</a>
                             {% endfor %}
                         </div>
                     </li>
@@ -53,15 +57,15 @@
 </header>
 <div class="main container mt-3">
     {% if no_sidebar %}
-            {% block regform %}
-            {% endblock %}
+        {% block regform %}
+        {% endblock %}
     {% else %}
         <div class="row flex-wrap-reverse">
             <div class="col-12 col-lg-8 px-0 px-lg-2 py-lg-0">
-{#                {% for i in range(3) %}#}
-                    {% block content %}
-                    {% endblock %}
-{#                {% endfor %}#}
+                {#                {% for i in range(3) %}#}
+                {% block content %}
+                {% endblock %}
+                {#                {% endfor %}#}
             </div>
             <div class="col-12 col-lg-4 p-0 justify-content-center">
                 {% if  current_user.is_anonymous %}
@@ -73,31 +77,34 @@
         </div>
     {% endif %}
 </div>
-    <footer class = "footer bg-blue pt-3 al">
-        <div class="container">
-            <div class="row">
-                <div class="footer-text mx-2 text-justify text-white">
-                    <h2>О нас</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Mauris convallis volutpat nibh, non imperdiet tellus commodo at.
-                        Nullam lobortis ex tincidunt, consequat sem id, feugiat dui.
-                        Vivamus libero dolor, tincidunt non tincidunt commodo, dignissim sit amet erat.
-                        Nullam orci elit, rutrum eu semper at, vestibulum sit amet nulla.
-                        Suspendisse ut felis rutrum, efficitur lorem ut, feugiat ante.
-                        Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
-                        Donec ullamcorper vel nisl at hendrerit. Sed eget turpis eu turpis aliquet luctus.
-                        In lacinia mauris quis orci fringilla mollis. Mauris malesuada gravida rutrum.
-                        Sed consequat laoreet felis, nec vehicula metus ultricies sit amet.
-                        Duis et est nec purus auctor sodales quis id odio. Nulla neque libero, cursus pharetra orci vel, tristique vulputate nunc.
-                        Ut accumsan nibh nec purus sodales scelerisque.</p>
-                </div>
+<footer class="footer bg-blue pt-3 al">
+    <div class="container">
+        <div class="row">
+            <div class="footer-text mx-2 text-justify text-white">
+                <h2>О нас</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Mauris convallis volutpat nibh, non imperdiet tellus commodo at.
+                    Nullam lobortis ex tincidunt, consequat sem id, feugiat dui.
+                    Vivamus libero dolor, tincidunt non tincidunt commodo, dignissim sit amet erat.
+                    Nullam orci elit, rutrum eu semper at, vestibulum sit amet nulla.
+                    Suspendisse ut felis rutrum, efficitur lorem ut, feugiat ante.
+                    Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                    Donec ullamcorper vel nisl at hendrerit. Sed eget turpis eu turpis aliquet luctus.
+                    In lacinia mauris quis orci fringilla mollis. Mauris malesuada gravida rutrum.
+                    Sed consequat laoreet felis, nec vehicula metus ultricies sit amet.
+                    Duis et est nec purus auctor sodales quis id odio. Nulla neque libero, cursus pharetra orci vel,
+                    tristique vulputate nunc.
+                    Ut accumsan nibh nec purus sodales scelerisque.</p>
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
 </body>
 <script src="/static/js/jquery-3.3.1.js"></script>
 <script src="/static/js/popper.js"></script>
 <script src="/static/js/my.js"></script>
 <script src="/static/js/bootstrap.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
 
 </html>

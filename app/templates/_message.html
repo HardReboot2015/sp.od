@@ -1,0 +1,19 @@
+<div class="content_bg p-3 m-0 m-lg-0 mb-lg-3 mb-2" >
+    <div class="message_header">
+        {% if message.type == 1 %}
+            <h2 class = "big_info-text pl-2 d-flex">Заказ</h2>
+        {% else %}
+            <h2 class = "big_info-text pl-2 d-flex">Ответ</h2>
+        {% endif %}
+    </div>
+        <div class="post_info row m-0">
+        <div class="flex-grow-1">
+            <h2 class="big_info-text">{{  }}</h2>
+        </div>
+        <div>
+            <h3 class = "big_info-text m-0">
+                {{  }}
+            </h3>
+        </div>
+    </div>
+</div>

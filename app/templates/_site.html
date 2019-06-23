@@ -1,0 +1,26 @@
+<div class = "content_bg  m-0 m-lg-0 mb-lg-3 mb-3 p-3">
+    <div class="post_header row  p-0 m-0">
+        <a href="{% if header =="Сайты" %}{{ url_for("site_products", id = site.id) }}{% else %}{{ url_for("categories") }}{% endif %}"
+           class = "big_info-text {% if header == "Сайты" %}col-12 col-sm-5 p-0{% else %}col-sm-11{% endif %}">{{ site.name }} </a>
+        {% if header == "Сайты" %}
+            <a href="{{ site.url }}" class = " text-blue big_info-text col-12 col-sm-6 p-0">{{ site.url }}</a>
+        {% endif %}
+        {% if current_user.is_admin %}
+            <div class = "col-md-1 text-right">
+                            <span  style="" data-toggle="popover"
+                                   data-placement="right"
+                                   data-trigger="hover"
+                                   data-content="Удалить">
+
+                            <a href="{% if header == "Сайты" %}{{ url_for("delete_site", site_id = site.id) }}{% else %}{{ url_for('delete_category', category_id = site.id) }}{% endif %}" class = "text-danger p-0"  style="font-size: 2rem" >
+                                <i class="far fa-times-circle"></i></a></span>
+            </div>
+        {% endif %}
+    </div>
+    <div class="post_info p-0 col-12 d-inline-flex justify-content-end">
+        {% if header == "Сайты" %}
+            <a href="{{ url_for("manager", login = site.manager.login) }}" class = "more-info-big-text text-dark">{{ site.manager.login }}</a>
+        {% endif %}
+    </div>
+
+</div>

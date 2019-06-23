@@ -1,16 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row col-12 p-0 m-0">
-{% for category in categories %}
-    <div class = "col-4 px-1 d-inline-flex">
-    <div class="card col-12 content_bg p-3 m-0 mb-lg-3">
-        <img class="card-img-top" src="{% if category.products.all()|length!= 0 %}{{ category.products[0].main_image }}{% else %}/static/images/product_images/palto_01.jpg{% endif %}" alt="Card image cap">
-            <div class="card-body">
-                <h5 class="card-title cart-product-title">{{ category.name }}</h5>
+
+
+    {% if current_user.is_admin  %}
+    <div class="row content_bg p-0 mx-1 mb-2 justify-content-between">
+            <h2 class = "big_info-text p-2 px-3">Категории</h2>
+            <div class="d-flex align-items-center">
+            <span data-toggle="popover"
+                  data-placement="right"
+                  data-trigger="hover"
+                  data-content="Редактировать категории">
+                                       <a href="{{ url_for('edit_categories') }}" class = "col-1 text-blue">
+                                           <i class="fas fa-pen " ></i></a></span>
+        </div>
             </div>
-       <div class="card-product-btn"><a href="{{ url_for('category', id=category.id) }}" class="btn btn-primary d-block btn-sp-primary bg-blue">Подробнее</a></div>
-    </div>
-    </div>
-{% endfor %}
+        {% endif %}
+
+    <div class="row m-0 align-items-stretch">
+        {% for category in categories %}
+            <div class = "col-4 px-1 d-inline-flex">
+                <div class="card col-12 content_bg p-3 m-0 mb-lg-3">
+                    <img class="card-img-top" src="{% if category.products.all()|length!= 0 %}{{ category.products[0].main_image }}{% else %}/static/images/product_images/palto_01.jpg{% endif %}" alt="Card image cap">
+                    <div class="card-body row">
+                        <h5 class="card-title cart-product-title d-flex align-self-end">{{ category.name }}</h5>
+                    </div>
+                    <div class="card-product-btn"><a href="{{ url_for('category', id=category.id) }}" class="btn btn-primary d-block btn-sp-primary bg-blue">Подробнее</a></div>
+                </div>
+            </div>
+        {% endfor %}
 </div>
 {% endblock %}

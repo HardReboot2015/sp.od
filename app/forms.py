@@ -35,11 +35,8 @@ class EditProfileForm(FlaskForm):
     last_name = StringField('LastName', validators=[DataRequired()])
     first_name = StringField('FirstName', validators=[DataRequired()])
     phone = StringField('Phone', validators=[DataRequired()])
-    # image = StringField('Image', validators=[DataRequired()])
-    # Защита
-    password = PasswordField('Password', validators=[DataRequired()])
-    password2 = PasswordField('Repeat password',
-                              validators=[DataRequired(), EqualTo('password', message="Введенные пароли не совпадают")])
+    main_img = FileField("MainImage", validators=[FileRequired()])
+
     # Cмена емаила после отправления сбщ на почту
     email = StringField('Email', validators=[DataRequired()])
     submit = SubmitField('Edit')
@@ -53,6 +50,15 @@ class EditProfileForm(FlaskForm):
             user = User.query.filter_by(username=self.login.data).first()
             if user is not None:
                 raise ValidationError('Please use a different username')
+
+
+class EditPasswordForm(FlaskForm):
+    password_old = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField('Repeat password',
+                              validators=[DataRequired(), EqualTo('password', message="Введенные пароли не совпадают")])
+    submit = SubmitField('ChangePassword')
+
 
 class AddProductForm(FlaskForm):
     name = StringField("Product_name", validators=[DataRequired()])
@@ -103,3 +109,17 @@ class MakeOrderForm(FlaskForm):
     additional = TextAreaField("Additional")
     send_mail = BooleanField('SendMail')
     submit = SubmitField("Order")
+
+class AddSiteForm(FlaskForm):
+    name = StringField("Site_name", validators=[DataRequired()])
+    url = StringField("Url", validators=[DataRequired()])
+    manager = StringField("Manager", validators=[DataRequired()])
+    submit = SubmitField("Add")
+
+class AddManagerSiteForm(FlaskForm):
+    site = SelectField("Site", validators=[DataRequired()])
+    submit = SubmitField("Save")
+
+class AddCategoryForm(FlaskForm):
+    name = StringField("Category_name", validators=[DataRequired()])
+    submit = SubmitField("Add")

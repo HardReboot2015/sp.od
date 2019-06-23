@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class = "content_bg p-3 m-0 m-lg-0 mb-lg-3 mb-2 row">
+        <h2 class="big_info-text col-5 p-0 m-0">{{ header }}</h2>
+        <input class="form-control col-12 col-sm-5" type="search" placeholder="Поиск" aria-label="Search">
+        <button class="btn btn-primary bg-blue btn-sp-primary my-2 my-sm-0 col-12 col-sm-2 m-0" type="submit">Найти</button>
+        {% if current_user.is_admin %}
+            <button  class = "btn btn-primary bg-blue col-12 col-md-3 p-2 btn-sp-primary" onclick="function f(){
+                $('#add_site').show();
+
+            };f();">+ Добавить</button>
+        {% endif %}
+{% if current_user.is_admin %}
+        <div class="col-12 p-0 m-0 py-2" id = "add_site" style = "display:none;" >
+            <form method="post" action="" >
+                {{ add_form.hidden_tag() }}
+                <div class="row {% if header == "Категории" %} justify-content-center p-0{% endif %}">
+                    <div class = "col-12 col-sm-6  m-0 ">
+                        <label for="Site_name">Наименование <span class = "text-danger">*</span></label>
+                        <input type="text" class = "form-control" name = "{{ add_form.name.name }}" id="Site_name">
+                    </div>
+                    {% if header == "Сайты" %}
+                    <div class = "col-12 col-sm-6 m-0">
+                        <label for="Url">Ссылка <span class = "text-danger">*</span></label>
+                        <input type="text" class = "form-control" name = "{{ add_form.url.name }}" id = "Url">
+                    </div>
+                        {% endif %}
+                </div>
+                <div>
+                    {% if header == "Сайты" %}
+                    <div class="row justify-content-center">
+                        <div class = "col-12 col-sm-6 m-0">
+                            <label for="Manager">Организатор</label>
+                            <input type="text" class = "form-control" name = "{{ add_form.manager.name }}" id = "Manager" >
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class = "row justify-content-center">
+                        <button type="submit" id = "Submit" name = "{{ add_form.submit.name }}" class="btn mb-1 btn-primary bg-blue btn-sp-primary  w-50 my-3">Подтвердить</button>
+                    </div>
+                    <div class="row justify-content-center">
+                        <button type = "reset" class = "btn btn-light btn-sp-light w-25 btn-sp-primary" onclick="function f(){
+                $('#add_site').hide();
+                $('#Site_name').value = '';
+                $('#Url').value = '';
+                $('#Manager').value = '';
+
+            };f();">Отмена</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+    </div>
+
+    {% for site in sites %}
+        {% include "_site.html" %}
+    {% endfor %}
+{% endblock %}

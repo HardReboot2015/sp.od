@@ -2,21 +2,24 @@
 {% block content %}
     <div class="content_bg p-3 m-0 m-lg-0 mb-lg-3 mb-3">
         <div class="post_header row justify-content-between px-3">
-            <h2 class="big_info-text pl-2 ">{{ product.name }}</h2>
+            <h2 class="big_info-text pl-2 col-10">{{ product.name }}</h2>
             {% if current_user.is_admin or current_user.id == product.site.manager_id %}
-                <a href="{{ url_for("change_product", id = product.id) }}" class = "text-blue more-info-text align-self-center">Изменить</a>
+                <a href="{{ url_for("change_product", id = product.id) }}"
+                   class="text-blue more-info-text align-self-center col-2">Изменить</a>
             {% endif %}
 
         </div>
 
         <div class="post_images row justify-content-center p-2 ">
             <div class="post_image-box main_image col-12 col-sm-12 col-lg-6 col-md-6">
-                <img src="{{ product.main_image }}" alt="" class="post_image post_image_post ">
+                <a data-fancybox="gallery" href="{{ product.main_image }}"><img src="{{ product.main_image }}" alt=""
+                                                                                class="post_image post_image_post "></a>
             </div>
             <div class=" row col-12 col-sm-12 col-lg-6 col-md-6 align-self-start">
                 {% for images in product.second_image %}
-                    <img src="{{ images }}" alt=""
-                         class="post_image secondary_image col-3 col-lg-6 col-md-6 col-sm-3 p-0 m-auto align-self-center">
+                    <a data-fancybox="gallery" class="col-3 col-lg-6 col-md-6 col-sm-3 p-0 m-auto align-self-center" href="{{ images }}"><img src="{{ images }}" alt=""
+                                                                                              class="post_image secondary_image">
+                    </a>
                 {% endfor %}
                 {##}
                 {#                {% for i in range(product.second_image|length) %}#}
@@ -28,7 +31,7 @@
         <div class="post_info row m-0">
             <div class="product-description col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7">
                 <span class="more-info-big-text">Описание:</span>
-                <p class="text-justify more-info-text">{{ product.description }}</p>
+                <p class="text-justify more-info-text"><pre>{{ product.description }}</pre></p>
                 <a href="{{ product.url }}" class="more-info-text">Посмотреть на сайте</a>
             </div>
             <div class="more-info col-12 col-md-5 p-0 mt-2 m-md-0 ">
@@ -41,7 +44,8 @@
                         href="#">{{ product.site.manager.login }}</a></span>
                 </div>
                 <div class="col-12">
-                    <h5 class="more-info-big-text">Артикул:</h5> <span class="more-info-text">{{ product.article}}</span>
+                    <h5 class="more-info-big-text">Артикул:</h5> <span
+                        class="more-info-text">{{ product.article }}</span>
                 </div>
                 <div class="col-12">
                     <h5 class="more-info-big-text">Цена:</h5> <span class="more-info-text">{{ product.price }}</span>
@@ -105,16 +109,22 @@
                         <h5 class="more-info-big-text">{{ product.type.name }}</h5><span
                             class="more-info-text">: {{ item_packs.goal }}</span>
                     </div>
-                    <div class="row px-3 pb-3" style = "line-height: 1.5rem">
-                        <form action="{{ url_for("order_min", product_id=product.id) }}" method = "post" class="d-flex col-12 col-md-7 m-0 p-0">
-                            <input type="number" class ="form-control col-4 " name = "{{ order_form.count_order.name }}" style = "" id = "count_items" value="1" >
-                            <button type = "submit" name="{{ order_form.submit.name }}"
-                                    class="btn-primary btn btn-sp-primary col-8 bg-blue ml-md-2 ml-2 my-md-0 p-0">Заказать</button>
+                    <div class="row px-3 pb-3" style="line-height: 1.5rem">
+                        <form action="{{ url_for("order_min", product_id=product.id) }}" method="post"
+                              class="d-flex col-12 col-md-7 m-0 p-0">
+                            <input type="number" class="form-control col-4 " name="{{ order_form.count_order.name }}"
+                                   style="" id="count_items" value="1">
+                            <button type="submit" name="{{ order_form.submit.name }}"
+                                    class="btn-primary btn btn-sp-primary col-8 bg-blue ml-md-2 ml-2 my-md-0 p-0">
+                                Заказать
+                            </button>
                         </form>
                         {% if current_user.is_authenticated %}
-                            <div class = "col-12 col-md-5 p-0 my-2 my-md-0 px-md-3 align-self-center">
-                                <h5 class = "more-info-big-text">Вы заказали</h5><span class = "more-info-text">: {{ current_user.count_ordered }}</span>
-                                <a href="{{ url_for("cancel", product_id = product.id , id = current_user.id, type = product.type_id) }}" class="text-blue">Отмена</a>
+                            <div class="col-12 col-md-5 p-0 my-2 my-md-0 px-md-3 align-self-center">
+                                <h5 class="more-info-big-text">Вы заказали</h5><span
+                                    class="more-info-text">: {{ current_user.count_ordered }}</span>
+                                <a href="{{ url_for("cancel", product_id = product.id , id = current_user.id, type = product.type_id) }}"
+                                   class="text-blue">Отмена</a>
                             </div>
                         {% endif %}
                     </div>

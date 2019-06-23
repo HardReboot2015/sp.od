@@ -1,15 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="row col-12 p-0 m-0 align-items-stretch">
+    <div class="row p-0 m-0 align-items-stretch">
         {% if products %}
             {% for product in products %}
                 <div class = "col-md-4 col-12 px-1 pb-2 d-inline-flex">
                     <div class="card col-12 content_bg p-3 m-0 mb-lg-1 ">
                         <img class="card-img-top" src="{{ product.main_image }}" alt="Card image cap">
-                        <div class="card-body">
-                            <h5 class="card-title cart-product-title d-flex ">{{ product.name }}</h5>
-                            <h5 class="card-title cart-product-title d-flex ">{{ product.price }} грн</h5>
+                        <div class="card-body row">
+                            <div class="col-12 align-self-end">
+                            <h5 class="card-title cart-product-title">{{ product.name }}</h5>
+                            <h5 class="card-title cart-product-title">{{ product.price }} грн</h5>
                         </div>
+                            </div>
                         <div class="card-product-btn"><a href="{{ url_for('product', id = product.id) }}" class="btn btn-primary d-block btn-sp-primary bg-blue">Подробнее</a></div>
                     </div>
                 </div>
@@ -18,7 +20,7 @@
         {% else %}
             <div class = "content_bg col-12 p-3 m-0 m-lg-0 mb-lg-3 mb-3 ">
                 <h1>Тут пока ничего нет</h1>
-                <a href="#" class="btn btn-primary d-block btn-sp-primary bg-blue">Заказать</a>
+                <a href="{{ url_for("order_product") }}" class="btn btn-primary d-block btn-sp-primary bg-blue">Заказать</a>
             </div>
 
         {% endif %}

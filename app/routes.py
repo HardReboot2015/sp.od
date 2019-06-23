@@ -4,7 +4,7 @@ from transliterate import translit
 from app import app
 from app import db
 import time
-from app.forms import LoginForm, RegisterForm, EditProfileForm, AddProductForm, OrderForm, ChangeProductForm, MakeOrderForm
+from app.forms import LoginForm, RegisterForm, EditProfileForm,EditPasswordForm, AddProductForm, OrderForm, ChangeProductForm, MakeOrderForm, AddSiteForm, AddManagerSiteForm, AddCategoryForm
 from app.models import User, Product, Category, Type, Site, Items, ItemPack, Messages
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_required, login_user, logout_user
@@ -164,7 +164,7 @@ def order_min(product_id):
     id_user = current_user.id
     order_form = OrderForm()
     item_pack = ItemPack.query.filter(ItemPack.id_product == product_id, ItemPack.status > 2).order_by(ItemPack.status, ItemPack.id).first_or_404()
-    print(item_pack)
+
     item_pack.get_busy_items()
     count = int(request.form['count_order'])
 
@@ -201,11 +201,10 @@ def order_min(product_id):
                         if count > 0: #если еще надо поставить юзера на размер
                             items.id_user = current_user.id #ставим
                             count -= 1 #минусуем параметp
-                            print(count)
+
 
                         db.session.add(items) #добавляем в сессию изменения
-                    print(add_itempacks)
-                    print(count)
+
                     add_itempacks -= 1 #минусуем количество добавления итемпаков
                 db.session.commit() #коммитим изменения
 
@@ -216,7 +215,7 @@ def order_min(product_id):
                 count-=1 #минусуем параметр
             item_pack.change_status() #меняем статус итемпака если надо
         db.session.commit() #
-    return redirect(url_for("product",id = product_id, order_form = order_form))
+    return redirect(url_for("product",id = product_id))
 
 #отмена заказа товара, параметры: id_product, id - id итема или None, id типа товара
 @app.route('/product/<int:product_id>/<id>/<int:type>/cancel')
@@ -226,7 +225,6 @@ def cancel(product_id, id, type):
         item = Items.query.get(id)
         item.id_user = None
         db.session.commit()
-        print("all good")
         product = Product.query.get(product_id)
         item.item_pack.change_status()
         product.delete_excess()
@@ -246,8 +244,9 @@ def cancel(product_id, id, type):
 @app.route('/manager_products/<int:id>')
 def manager_products(id):
     categories = Category.query.all()
-    if current_user.is_manage == True:
-        sites = current_user.sites.all()
+    if id:
+        user = User.query.get(id)
+        sites = user.sites.all()
         products = []
         for site in sites:
             product = site.products.all()
@@ -278,27 +277,30 @@ def category(id):
 def settings(username):
     if not current_user.is_authenticated:
         return redirect(url_for('index'))
-    form = EditProfileForm(current_user.login)
-    if form.validate_on_submit():
-        current_user.login = form.login.data
-        current_user.first_name = form.first_name.data
-        current_user.last_name = form.last_name.data
-        current_user.phone = form.phone.data
+    form_info = EditProfileForm(current_user.login)
+    form_password = EditPasswordForm()
+    if form_info.validate_on_submit():
+        current_user.login = form_info.login.data
+        current_user.first_name = form_info.first_name.data
+        current_user.last_name = form_info.last_name.data
+        current_user.phone = form_info.phone.data
 
-        current_user.password = form.password2.data
-        current_user.email = form.email.data
+        current_user.email = form_info.email.data
 
     elif request.method == 'GET':
-        form.login.data = current_user.login
-        form.first_name.data = current_user.first_name
-        form.last_name.data = current_user.last_name
-        form.phone.data = current_user.phone
-        form.first_name.data = current_user.first_name
+        form_info.login.data = current_user.login
+        form_info.first_name.data = current_user.first_name
+        form_info.last_name.data = current_user.last_name
+        form_info.phone.data = current_user.phone
+        form_info.first_name.data = current_user.first_name
 
-        form.password2.data = current_user.password
-        form.email.data = current_user.email
+        form_info.email.data = current_user.email
+    
+    if form_password.validate_on_submit():
+        if request.form['password_old']:
+            pass
 
-    return render_template("settings.html", title = "Настройки")
+    return render_template("settings.html", title = "Настройки", form_info=form_info, form_password=form_password)
 
 #добавление товара
 @app.route('/add_product', methods=['GET', 'POST'])
@@ -308,7 +310,10 @@ def add_product():
         return redirect(url_for('index'))
     add_form = AddProductForm()
     categories = Category.query.all()
-    sites = Site.query.filter_by(manager_id=current_user.id)
+    if current_user.is_admin:
+        sites = Site.query.all()
+    else:
+        sites = Site.query.filter_by(manager_id=current_user.id)
     types = Type.query.all()
 
     if request.method == "POST":
@@ -407,33 +412,44 @@ def change_product(id):
             arr_sizes.append(size)
 
 
-    if not current_user.is_admin or current_user.id != product.site.manager_id:
-        return url_for("product", id = id)
+    if (not current_user.is_admin) and (current_user.id != product.site.manager_id):
+        return redirect(url_for("product", id = id))
     cp_form = ChangeProductForm()
     if request.method == "POST":
 
         if request.form['name'] != product.name and request.form['name'] != "": product.name = request.form['name']
         if request.form['price'] != product.price and request.form['price'] != "": product.price = request.form['price']
         if request.form['description'] != product.description and request.form['description'] != "": product.description = request.form['description']
-        if request.form['goal'] != main_item_pack.goal and request.form['goal'] != "": main_item_pack.goal = request.form['goal']
+
         if request.form['url'] != product.url and request.form['url'] != "":product.url = request.form['url']
         if request.form['article'] != product.article and request.form['article'] != "": product.article = request.form['article']
         if request.form['category'] != product.category_id: product.category_id = request.form['category']
         if request.form['site'] != product.site_id:product.site_id = request.form['site']
-        if request.form['sizes'] != sizes:
-            string_sizes = re.findall(r'\b[-\w]+',request.form['sizes'])
-            print(len(string_sizes))
-            print(request.form['goal'])
-            if len(string_sizes) == int(request.form['goal']):
-                for item_pack in product.item_packs.filter(ItemPack.status > 2).order_by(ItemPack.status).all():
-                    item_pack.sizes = string_sizes
-                    item_pack.items.delete()
-                    for i in string_sizes:
-                        items = Items()
-                        items.id_itemPack = item_pack.id
-                        items.size = i
-                        db.session.add(items)
-
+        if product.type_id == 1:
+            if request.form['goal'] != main_item_pack.goal and request.form['goal'] != "": main_item_pack.goal = \
+                request.form['goal']
+            if request.form['sizes'] != sizes:
+                string_sizes = re.findall(r'\b[-\w]+',request.form['sizes'])
+                if len(string_sizes) == int(request.form['goal']):
+                    for item_pack in product.item_packs.filter(ItemPack.status > 2).order_by(ItemPack.status).all():
+                        item_pack.sizes = string_sizes
+                        item_pack.items.delete()
+                        for i in string_sizes:
+                            items = Items()
+                            items.id_itemPack = item_pack.id
+                            items.size = i
+                            db.session.add(items)
+                        item_pack.change_status()
+                    product.delete_excess()
+        elif request.form['goal'] != main_item_pack.goal and request.form['goal'] != "":
+            main_item_pack.goal = request.form['goal']
+            for item_pack in product.item_packs.filter(ItemPack.status > 2).order_by(ItemPack.status).all():
+                item_pack.items.delete()
+                for i in main_item_pack.goal:
+                    items = Items()
+                    items.id_itemPack = item_pack.id
+                    db.session.add(items)
+                item_pack.change_status()
         db.session.commit()
         product.delete_excess()
         # работа с картинками
@@ -484,5 +500,203 @@ def delete_product(id):
         db.session.delete(product)
         db.session.commit()
         return redirect(url_for("index", categories=categories))
-    else:
-        return redirect(url_for("product", id = id))
+    return redirect(url_for("product", id = id))
+
+
+@app.route('/managers')
+@login_required
+def managers():
+    categories = Category.query.all()
+    if not current_user.is_admin:
+        return redirect(url_for("index", categories=categories))
+    managers = User.query.filter(User.is_manage==True).all()
+    return render_template("managers.html", managers=managers, categories = categories, btn = "button" )
+
+@app.route('/manager/<login>', methods = ['GET', 'POST'])
+@login_required
+def manager(login):
+    categories = Category.query.all()
+
+    manager = User.query.filter(User.login == login).first()
+    sites = manager.sites.all()
+    free_sites = Site.query.filter(Site.manager_id == None).all()
+
+    if not current_user.is_admin:
+        return render_template("manager.html", manager=manager, categories=categories, sites=sites, btn="no_button")
+    add_form = AddManagerSiteForm()
+    if request.method == 'POST':
+        site_id = request.form['site']
+        site = Site.query.get(site_id)
+        manager = User.query.get(manager.id)
+        site.manager_id = manager.id
+        db.session.commit()
+        return redirect(url_for("manager", login=manager.login))
+    return render_template("manager.html", manager=manager, categories=categories, add_form = add_form, sites=sites, btn = "button", free_sites = free_sites)
+
+@app.route('/sites', methods = ['GET', 'POST'])
+@login_required
+def sites():
+    categories = Category.query.all()
+    sites = Site.query.all()
+    if not current_user.is_admin:
+        return render_template("sites.html", sites=sites, categories=categories, header = "Сайты")
+    add_form = AddSiteForm()
+    if request.method == 'POST':
+        site_manager = None
+        if request.form['name'] != "": site_name = request.form["name"]
+        if request.form['url'] != "": site_url = request.form["url"]
+        if request.form['manager'] != "":site_manager = request.form["manager"]
+        if Site.query.filter(Site.name == site_name).first() != None:
+            err = "Такой сайт уже есть"
+            return err
+        elif Site.query.filter(Site.url == site_url).first() != None:
+            err = "Такой сайт уже есть"
+            return err
+        elif User.query.filter(User.is_manage == True and User.login == site_manager).first() == None:
+            err = "Пользователь не найден"
+            return err
+        else:
+            site = Site()
+            site.name = site_name
+            site.url = site_url
+            if site_manager != None:
+                site.manager_id = User.query.filter(User.is_manage == True and User.login == site_manager).first().id
+            db.session.add(site)
+            db.session.commit()
+        return redirect(url_for("sites"))
+    return render_template("sites.html", sites=sites, categories = categories,add_form = add_form, header = "Сайты")
+
+@app.route('/site_products/<int:id>')
+@login_required
+def site_products(id):
+   categories = Category.query.all()
+   products = Site.query.get(id).products
+   return render_template("manager_products.html",title = "Товары сайта", products=products, categories=categories)
+
+@app.route('/user_products/<int:id>')
+@login_required
+def user_products(id):
+    categories = Category.query.all()
+    items = User.query.get(id).items
+    item_packs =[]
+    for item in items:
+       item_packs.append(item.item_pack.distinct(ItemPack.id_product))
+    print(item_packs)
+    return render_template("manager_products.html",title = "Вы забронировали",  categories=categories)
+
+@app.route('/users')
+@login_required
+def users():
+    categories = Category.query.all()
+    if not current_user.is_admin:
+        return redirect(url_for("index", categories=categories))
+    managers = User.query.filter(User.is_manage==False).all()
+    return render_template("managers.html", managers=managers, categories = categories, btn = "no")
+
+@app.route('/set_manager/<id>')
+@login_required
+def set_manager(id):
+    categories = Category.query.all()
+    if not current_user.is_admin:
+        return redirect(url_for("index", categories=categories))
+    user = User.query.get(id)
+    user.is_manage = True
+    db.session.commit()
+    return render_template("manager.html", first = "yes", categories = categories, manager = user, btn = "button")
+
+@app.route('/cancel_manager/<login>')
+@login_required
+def cancel_manager(login):
+    categories = Category.query.all()
+    if not current_user.is_admin:
+        return redirect(url_for("index", categories=categories))
+    user = User.query.filter(User.login == login).first()
+    user.is_manage = False
+    db.session.commit()
+    return redirect(url_for("managers"))
+
+@app.route('/ban_manager/<id>')
+@login_required
+def ban_manager(id):
+    categories = Category.query.all()
+    if not current_user.is_admin:
+        return redirect(url_for("index", categories=categories))
+
+    user = User.query.get(id)
+    if (user.id != current_user.id):
+        user.is_manage = False
+        db.session.commit()
+    return redirect(url_for("managers"))
+
+# @app.route('/add_manager_site/<manager_id>',methods=['GET', 'POST'])
+# @login_required
+# def add_manager_site(manager_id):
+#
+
+@app.route('/cancel_site/<site_id>')
+@login_required
+def cancel_site(site_id):
+    categories = Category.query.all()
+    if not current_user.is_admin:
+        return redirect(url_for("index", categories=categories))
+    site = Site.query.get(site_id)
+    site.manager_id = None
+    db.session.commit()
+
+    return redirect(url_for("managers"))
+
+@app.route('/delete_site/<site_id>')
+@login_required
+def delete_site(site_id):
+    categories = Category.query.all()
+    if not current_user.is_admin:
+        return redirect(url_for("index", categories=categories))
+    site = Site.query.get(site_id)
+    for product in site.products:
+        for itempack in product.item_packs:
+            itempack.items.delete()
+        product.item_packs.delete()
+    site.products.delete()
+    db.session.delete(site)
+    db.session.commit()
+    return redirect(url_for("sites"))
+
+@app.route('/messages')
+@login_required
+def messages():
+    categories = Category.query.all()
+    return render_template("messages.html", categories = categories)
+
+@app.route('/edit_categories', methods = ['GET', 'POST'])
+@login_required
+def edit_categories():
+    categories = Category.query.all()
+    add_form = AddCategoryForm()
+    if not current_user.is_admin:
+        return redirect("categories")
+    if request.method == 'POST':
+        category_name = ""
+        if request.form['name'] != "": category_name = request.form['name']
+        if category_name != "":
+            category = Category()
+            category.name = category_name
+            db.session.add(category)
+            db.session.commit()
+        return redirect(url_for('edit_categories'))
+    return render_template("sites.html", categories = categories, sites = categories, header = "Категории", add_form = add_form)
+
+@app.route('/delete_category/<category_id>')
+@login_required
+def delete_category(category_id):
+    categories = Category.query.all()
+    if not current_user.is_admin:
+        return redirect(url_for("index", categories=categories))
+    site = Category.query.get(category_id)
+    for product in site.products:
+        for itempack in product.item_packs:
+            itempack.items.delete()
+        product.item_packs.delete()
+    site.products.delete()
+    db.session.delete(site)
+    db.session.commit()
+    return redirect(url_for("edit_categories"))

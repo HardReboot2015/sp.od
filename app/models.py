@@ -178,10 +178,10 @@ class Type(db.Model):
     products = db.relationship('Product', backref='type', lazy='dynamic')
 
 class Site(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(64), nullable=False)
     url = db.Column(db.String(64), nullable=False)
-    manager_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    manager_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     type = db.Column(db.Integer, nullable=False, default=0)
 
     products = db.relationship('Product', backref='site', lazy='dynamic')
@@ -215,7 +215,7 @@ class User(UserMixin, db.Model):
     messages_sent = db.relationship('Messages', foreign_keys = 'Messages.from_user', backref='author', lazy = 'dynamic')
     messages_reseived = db.relationship('Messages', foreign_keys = 'Messages.recepient_id', backref = 'recepient', lazy='dynamic')
 
-    last_message_read_time = db.Column(db.DateTime)
+    last_message_read_time = db.Column(db.Integer)
 
 
     def set_password(self, password):

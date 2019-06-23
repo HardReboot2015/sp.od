@@ -1,0 +1,20 @@
+<div class = "content_bg  m-0 m-lg-0 mb-lg-3 mb-3 p-3">
+    <div class="post_images row px-3 ">
+        <div class="col-2 user-img p-0">
+            <img src="{{ manager.photo }}" alt="" class = "post_image">
+        </div>
+        <div class="col-10 ">
+            <div class="post_header row justify-content-between m-0">
+                <a href="#" class = "big_info-text">{{ manager.first_name }} {{ manager.last_name }} <span class = "text-blue">@{{ manager.login }}</span></a>
+            </div>
+            <div class="post_info p-0 col-12 d-inline-flex justify-content-end">
+                {% if btn == "button" %}
+                    <a href="{{ url_for("manager", login = manager.login) }}" class = "btn mb-1 btn-primary bg-blue btn-sp-primary mr-2 ">Изменить</a>
+                    <a href="{{ url_for("ban_manager", id = manager.id) }}" class = "btn mb-1 btn-danger ">Забанить</a>
+                {% else %}
+                    <a href="{{ url_for("set_manager", id = manager.id) }}" class = "btn mb-1 btn-primary bg-blue btn-sp-primary mr-2">Назначить организатором</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

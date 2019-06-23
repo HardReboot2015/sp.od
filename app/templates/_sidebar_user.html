@@ -9,16 +9,19 @@
             </div>
         </div>
 		<div class="sidebar_menu d-flex row m-0  py-2">
-			<a href="" class="sidebar_menu-item col-12">Заказы</a>
-			<a href="" class="sidebar_menu-item col-12">Сохраненные</a>
+			<a href="{{ url_for("messages") }}" class="sidebar_menu-item col-12" >Заказы</a>
+			<a href="{{ url_for("sites") }}" class="sidebar_menu-item col-12">Сайты</a>
 			<a href="" class="sidebar_menu-item col-12">Ответы</a>
+            <a href="{{ url_for("user_products", id = current_user.id) }}" class = "sidebar_menu-item col-12">Забронированное</a>
             <a href="{{ url_for('settings', username = current_user.login ) }}" class="sidebar_menu-item col-12">Настройки</a>
             {% if current_user.is_manage %}
                 <a href="{{ url_for('manager_products', id = current_user.id) }}" class = "sidebar_menu-item col-12">Мои товары</a>
+
                 <a href="{{ url_for("add_product") }}" class = "sidebar_menu-item col-12">Добавить товар</a>
+
             {% endif %}
             {% if current_user.is_admin %}
-                <a href="" class="sidebar_menu-item col-12">Организаторы</a>
+                <a href="{{ url_for('managers') }}" class="sidebar_menu-item col-12">Организаторы</a>
             {% endif %}
 
 		</div>

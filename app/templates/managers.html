@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class = "content_bg p-3 m-0 m-lg-0 mb-lg-3 mb-2 row">
+        <h2 class="big_info-text col-6 p-0 m-0">Организаторы</h2>
+        <input class="form-control col-4" type="search" placeholder="Поиск" aria-label="Search">
+        <button class="btn btn-primary bg-blue btn-sp-primary my-2 my-sm-0 col-2 m-0" type="submit">Найти</button>
+        {% if btn == "button" %}
+            <a href="{{ url_for("users") }}" class = "btn btn-primary bg-blue col-2 btn-sp-primary ">+ Добавить</a>
+        {% endif %}
+    </div>
+
+    {% for manager in managers %}
+        {% include "_manager.html" %}
+    {% endfor %}
+
+{% endblock %}
